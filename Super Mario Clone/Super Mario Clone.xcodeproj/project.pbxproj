@@ -29,6 +29,7 @@
 		87ABBB4D24890F840018AD64 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		87ABBB5524890FBF0018AD64 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		87ABBB5724890FD60018AD64 /* libraylib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libraylib.a; path = ../../../../../../../usr/local/Cellar/raylib/3.0.0/lib/libraylib.a; sourceTree = "<group>"; };
+		87ABBB5B2489394D0018AD64 /* Brick.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Brick.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +48,7 @@
 		87ABBB4124890F840018AD64 = {
 			isa = PBXGroup;
 			children = (
+				87ABBB5C2489394F0018AD64 /* Assets */,
 				87ABBB4C24890F840018AD64 /* Super Mario Clone */,
 				87ABBB4B24890F840018AD64 /* Products */,
 				87ABBB5424890FBF0018AD64 /* Frameworks */,
@@ -76,6 +78,14 @@
 				87ABBB5524890FBF0018AD64 /* OpenGL.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		87ABBB5C2489394F0018AD64 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				87ABBB5B2489394D0018AD64 /* Brick.png */,
+			);
+			path = Assets;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
