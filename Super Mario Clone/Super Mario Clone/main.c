@@ -26,6 +26,8 @@ int main(int argc, const char * argv[]) {
     Color testGround = (Color){231,91,52,255};
     Color playerColor = (Color){254,240,79,255};
     
+    Texture2D groundBrick = LoadTexture("./Resources/Bricks.gif");
+
     while (!WindowShouldClose())
     {
         // Events and Input handling
@@ -40,6 +42,7 @@ int main(int argc, const char * argv[]) {
        
         //Ground for player
         DrawRectangle(0, 400, screenWidth, 100,testGround);
+        DrawTexture(groundBrick, 0, 0, RAYWHITE);
 
         //Collisions
         
