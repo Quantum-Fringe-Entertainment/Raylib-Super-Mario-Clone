@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		87ABBB4E24890F840018AD64 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 87ABBB4D24890F840018AD64 /* main.c */; };
+		87ABBB5624890FBF0018AD64 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87ABBB5524890FBF0018AD64 /* OpenGL.framework */; };
+		87ABBB5824890FD70018AD64 /* libraylib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 87ABBB5724890FD60018AD64 /* libraylib.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +27,8 @@
 /* Begin PBXFileReference section */
 		87ABBB4A24890F840018AD64 /* Super Mario Clone */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Super Mario Clone"; sourceTree = BUILT_PRODUCTS_DIR; };
 		87ABBB4D24890F840018AD64 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		87ABBB5524890FBF0018AD64 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		87ABBB5724890FD60018AD64 /* libraylib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libraylib.a; path = ../../../../../../../usr/local/Cellar/raylib/3.0.0/lib/libraylib.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,6 +36,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				87ABBB5824890FD70018AD64 /* libraylib.a in Frameworks */,
+				87ABBB5624890FBF0018AD64 /* OpenGL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -43,6 +49,7 @@
 			children = (
 				87ABBB4C24890F840018AD64 /* Super Mario Clone */,
 				87ABBB4B24890F840018AD64 /* Products */,
+				87ABBB5424890FBF0018AD64 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -60,6 +67,15 @@
 				87ABBB4D24890F840018AD64 /* main.c */,
 			);
 			path = "Super Mario Clone";
+			sourceTree = "<group>";
+		};
+		87ABBB5424890FBF0018AD64 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				87ABBB5724890FD60018AD64 /* libraylib.a */,
+				87ABBB5524890FBF0018AD64 /* OpenGL.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -239,6 +255,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				HEADER_SEARCH_PATHS = /usr/local/include;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/raylib/3.0.0/lib,
+					/usr/local/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -247,6 +269,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				HEADER_SEARCH_PATHS = /usr/local/include;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/raylib/3.0.0/lib,
+					/usr/local/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
