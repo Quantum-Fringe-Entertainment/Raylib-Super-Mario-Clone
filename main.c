@@ -20,6 +20,7 @@ const int screenHeight = 600;
 // MARK:- Function Declarations
 void DrawGround(Texture2D groundTex, int groundHeight);
 void AnimateSpriteSheetRec(Texture2D spriteSheet, Rectangle *frameRec, int framesSpeed, int frames);
+
 // MARK:- Structs
 struct Player {
     int playerWidth;
@@ -28,6 +29,8 @@ struct Player {
     Vector2 Position;
     Rectangle Rect;
 };
+// MARK:- Enums
+
 
 int main() {
     InitWindow(screenWidth, screenHeight, "Mario clone");
@@ -37,11 +40,11 @@ int main() {
    Texture2D playerTex = (Texture2D)LoadTexture("Resources/Character/Mario Idle.png");
    Texture2D groundTex = (Texture2D)LoadTexture("Resources/Environment/Ground Tile.png");
    Texture2D brickTex = (Texture2D)LoadTexture("Resources/Environment/Bricks.png");
-   Texture2D hillLargeTexture_1 = (Texture2D)LoadTexture("Resources/Environment/HillLarge.png");
-   Texture2D cloudSingleTexture_1 = (Texture2D)LoadTexture("Resources/Environment/CloudSingle.png");
-   Texture2D bushTripleTexture_1 = (Texture2D)LoadTexture("Resources/Environment/BushTriple.png");
-   Texture2D hillSmallTexture_1 = (Texture2D)LoadTexture("Resources/Environment/HillSmall.png");
-   Texture2D questionBlockTexture_1 = (Texture2D)LoadTexture("Resources/Props/QuestionBlock.png");
+   Texture2D hillLargeTexture = (Texture2D)LoadTexture("Resources/Environment/HillLarge.png");
+   Texture2D cloudSingleTexture = (Texture2D)LoadTexture("Resources/Environment/CloudSingle.png");
+   Texture2D bushTripleTexture = (Texture2D)LoadTexture("Resources/Environment/BushTriple.png");
+   Texture2D hillSmallTexture = (Texture2D)LoadTexture("Resources/Environment/HillSmall.png");
+   Texture2D questionBlockTexture = (Texture2D)LoadTexture("Resources/Props/QuestionBlock.png");
 
 //MARK:- Environment Variables
     Color marioSkyBlue = (Color){107,139,247};
@@ -51,7 +54,7 @@ int main() {
     struct Player player = {};
     player.playerWidth = playerTex.width;
     player.playerHeight = playerTex.height;
-    player.Position.x = 370;
+    player.Position.x = 370; // Arbitrary start position
 
 // Camera Settings
    Camera2D camera = { 0 };
@@ -59,9 +62,10 @@ int main() {
    camera.rotation = 0.0f;
    camera.zoom = 1.0f;
 
-// Environment
-  Rectangle a_questionBlockRec;
-
+// Environment Object and props Rects
+  Rectangle a_questionBlockRec_1;
+  Rectangle brick_1 = (Rectangle){0,0, brickTex.width, brickTex.height};
+  Rectangle a_questionBlockRec_2;
 
 
 
@@ -87,8 +91,9 @@ int main() {
 
         // Sprite Animations
 
-        // Question Block 1
-        AnimateSpriteSheetRec(questionBlockTexture_1, &a_questionBlockRec, 10, 3);
+        AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_1, 20, 3);// Question Block 1
+        AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_2, 20, 3);// Question Block 2
+
 
 
         //Drawing
@@ -101,11 +106,11 @@ int main() {
 
 
           // Background elements
-          DrawTexture(hillLargeTexture_1, 100, 530, RAYWHITE);
-          DrawTexture(cloudSingleTexture_1, 360, 230, RAYWHITE);
-          DrawTexture(bushTripleTexture_1, 500, 570, RAYWHITE);
-          DrawTexture(hillSmallTexture_1, 630, 570, RAYWHITE);
-          DrawTexture(cloudSingleTexture_1, 700, 200, RAYWHITE);
+          DrawTexture(hillLargeTexture, 100, 530, RAYWHITE);
+          DrawTexture(cloudSingleTexture, 360, 230, RAYWHITE);
+          DrawTexture(bushTripleTexture, 500, 570, RAYWHITE);
+          DrawTexture(hillSmallTexture, 630, 570, RAYWHITE);
+          DrawTexture(cloudSingleTexture, 700, 200, RAYWHITE);
 
 
           // Ground
@@ -113,7 +118,9 @@ int main() {
 
 
           // Interactables and props
-          DrawTextureRec(questionBlockTexture_1, a_questionBlockRec, (Vector2){600, 400}, WHITE);  // Draw part of the texture
+          DrawTextureRec(questionBlockTexture, a_questionBlockRec_1, (Vector2){600, 400}, WHITE);  // Draw part of the texture
+          DrawTextureRec(brickTex, brick_1, (Vector2){700, 400}, WHITE);
+          DrawTextureRec(questionBlockTexture, a_questionBlockRec_2, (Vector2){700 + brick_1.width, 400}, WHITE);
 
 
           // Player
@@ -135,7 +142,8 @@ int main() {
 
 void DrawGround(Texture2D groundTex, int groundHeight){
     int groundXIterations = (int)6000/(float)groundTex.width;
-    int groundYIterations = 2;//(int)60/(float)groundTex.height;
+    int groundYIterations = 2;//(int)60/(float)groundTex.height; /* Use this logic you need tesselated sprites along the Y-Axis.*/
+
     //Ground for player
     for(int i = 0; i < groundYIterations ; i++)
     {
