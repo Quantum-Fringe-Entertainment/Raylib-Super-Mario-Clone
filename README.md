@@ -26,7 +26,7 @@ It is recommended to install Raylib using Homebrew
  ```clang -std=c11 -framework IOKit -framework Cocoa -framework OpenGL /usr/local/Cellar/raylib/3.0.0/lib/libraylib.a  main.c -o my_app && ./my_app```
 
 #### C++
-```clang -std=c++11 -framework CoreVideo -framework IOKit -framework Cocoa -framework GLUT -framework OpenGL  libraylib.a main.cpp -o my_app```
+```clang -std=c++11 -framework CoreVideo -framework IOKit -framework Cocoa -framework GLUT -framework OpenGL  /path/to/libraylib.a main.cpp -o my_app```
 
 #### On Windows : 
 ```gcc -o core_basic_window.exe core_basic_window.c -s C:\raylib\raylib\raylib_icon -Iexternal -lraylib -lglfw3 -lopengl32 -lgdi32 -lopenal32 -lwinmm -std=c99 -Wl,-allow-multiple-definition -Wl,--subsystem,windows```
