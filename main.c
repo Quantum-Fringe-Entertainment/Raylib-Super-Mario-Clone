@@ -11,7 +11,7 @@
 #include <raylib.h>
 
 // MARK:- Macros
-#define G -20  // WORLD GRAVITY
+#define G -6  // WORLD GRAVITY
 #define QS_FRAME_RATE 40
 
 // MARK:- Constants
@@ -20,7 +20,7 @@ const int screenHeight = 600;
 
 
 // MARK:- Function Declarations
-void DrawGround(Texture2D groundTex, int groundHeight);
+void DrawGround(Texture2D groundTex, Rectangle *groundRect);
 void AnimateSpriteSheetRec(Texture2D spriteSheet, Rectangle *frameRec, int framesSpeed, int frames);
 
 // MARK:- Structs
@@ -59,7 +59,6 @@ int main() {
 
 //MARK:- Environment Variables
     Color marioSkyBlue = (Color){107,139,247};
-    const int groundHeight = 0;
 
 //MARK:- Player Variables
     struct Player player = {};
@@ -69,11 +68,12 @@ int main() {
 
 // Camera Settings
    Camera2D camera = { 0 };
-   camera.offset = (Vector2){ screenWidth/2, screenHeight/2 };
+   camera.offset = (Vector2){ screenWidth/2, screenHeight/2 + 200};
    camera.rotation = 0.0f;
    camera.zoom = 1.0f;
 
 // Environment Object and props Rects
+  Rectangle groundRect = (Rectangle){0,0, groundTex.width, groundTex.height};;
   Rectangle a_questionBlockRec_1;
   Rectangle brick_1 = (Rectangle){0,0, brickTex.width, brickTex.height};
   Rectangle a_questionBlockRec_2;
@@ -83,12 +83,7 @@ int main() {
   Rectangle a_questionBlockRec_4;
 
 
-
-
-
-
-
-
+    // Game Loop
     while (!WindowShouldClose())
     {
         //Update
@@ -100,15 +95,25 @@ int main() {
         if (IsKeyDown(KEY_RIGHT)) player.Position.x += 2 * 100 * GetFrameTime();
         else if (IsKeyDown(KEY_LEFT)) player.Position.x -= 2 * 100 * GetFrameTime();
 
-        // Player Update
+        if(IsKeyPressed(KEY_SPACE) && CheckCollisionRecs(player.Rect, groundRect)){
+          printf("Jump key pressed \n");
+          player.Position.y -= 180.0f;
+          printf("Current height is : %f \n", player.Position.y);
+        }
+
+        // Player Collisions
+        if(!CheckCollisionRecs(player.Rect, groundRect)){
+          player.Position.y -= G * GetFrameTime() * 50;
+        }
+
+        // Player Rect Update
         player.Rect = (Rectangle){player.Position.x, player.Position.y, player.playerWidth, player.playerHeight};
-        player.Position.y = 370;
 
         // Sprite Animations
         AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_1, QS_FRAME_RATE, 3);// Question Block 1
         AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_2, QS_FRAME_RATE, 3);// Question Block 2
         AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_3, QS_FRAME_RATE, 3);// Question Block 3
-        AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_4, QS_FRAME_RATE, 3);
+        AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_4, QS_FRAME_RATE, 3);// Question Block 4
 
 
 
@@ -117,8 +122,6 @@ int main() {
 
           ClearBackground(marioSkyBlue);
           BeginMode2D(camera);
-
-          DrawFPS(0, 0);
 
 
           // Background elements
@@ -130,16 +133,18 @@ int main() {
 
 
           // Ground
-          DrawGround(groundTex, groundHeight);
+          DrawGround(groundTex, &groundRect);
 
 
           // Interactables and props
-          DrawTextureRec(questionBlockTexture, a_questionBlockRec_1, (Vector2){600, 400}, WHITE);  // Draw part of the texture
+          DrawTextureRec(questionBlockTexture, a_questionBlockRec_1, (Vector2){600, 400}, WHITE);
+
           DrawTextureRec(brickTex, brick_1, (Vector2){700, 400}, WHITE);
           DrawTextureRec(questionBlockTexture, a_questionBlockRec_2, (Vector2){700 + brickTex.width, 400}, WHITE);
           DrawTextureRec(brickTex, brick_2, (Vector2){700 + brickTex.width + questionBlockTexture.width/3, 400}, WHITE);
           DrawTextureRec(questionBlockTexture, a_questionBlockRec_3, (Vector2){700 + (brickTex.width * 2) + questionBlockTexture.width/3, 400}, WHITE);
           DrawTextureRec(brickTex, brick_3, (Vector2){700 + (brickTex.width * 2) + (questionBlockTexture.width/3 * 2), 400}, WHITE);
+
           DrawTextureRec(questionBlockTexture, a_questionBlockRec_4, (Vector2){700 + (brickTex.width * 1) + (questionBlockTexture.width/3 * 1), 300}, WHITE);
 
 
@@ -149,6 +154,11 @@ int main() {
 
           // Enemies
 
+
+          //Debug Drawings
+          Rectangle testRect = (Rectangle){groundRect.x, groundRect.y, groundRect.width, groundRect.height};
+          DrawRectangleLinesEx(testRect, 4, RAYWHITE);
+          DrawRectangleRec(GetCollisionRec(player.Rect, groundRect), RAYWHITE);
 
           EndMode2D();
 
@@ -160,19 +170,26 @@ int main() {
     return 0;
 }
 
-void DrawGround(Texture2D groundTex, int groundHeight){
-    int groundXIterations = (int)6000/(float)groundTex.width;
+void DrawGround(Texture2D groundTex, Rectangle *groundRect){
+    int groundXIterations = (int)2000/(float)groundTex.width;
     int groundYIterations = 2;//(int)60/(float)groundTex.height; /* Use this logic you need tesselated sprites along the Y-Axis.*/
 
+    Vector2 position = (Vector2){0,0};
     //Ground for player
     for(int i = 0; i < groundYIterations ; i++)
     {
-        DrawTexture(groundTex, groundTex.width * 0,((screenHeight - groundHeight) + (groundTex.height * i)), RAYWHITE);
+        position = (Vector2){groundTex.width * 0,((screenHeight) + (groundTex.height * i))};
+        DrawTexture(groundTex, position.x, position.y, RAYWHITE);
         for(int j = 1; j < groundXIterations ; j ++)
         {
-            DrawTexture(groundTex, groundTex.width * j,((screenHeight - groundHeight) + (groundTex.height * i)), RAYWHITE);
+            position = (Vector2){groundTex.width * j,((screenHeight) + (groundTex.height * i))};
+            DrawTexture(groundTex, position.x, position.y, RAYWHITE);
         }
     }
+    groundRect->x = 0;
+    groundRect->y = position.y - groundTex.height;
+    groundRect->width = position.x + groundTex.width;
+    groundRect->height = 2 * groundTex.height;
 }
 
 void AnimateSpriteSheetRec(Texture2D spriteSheet, Rectangle *frameRec, int framesSpeed, int frames){
