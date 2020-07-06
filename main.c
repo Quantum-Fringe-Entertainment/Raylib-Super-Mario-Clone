@@ -6,11 +6,13 @@
 //  Copyright © 2020 phani srikar. All rights reserved.
 //
 
+// Includes and libraries
 #include <stdio.h>
 #include <raylib.h>
 
 // MARK:- Macros
-#define G -20  // WORLD GRAVITYra
+#define G -20  // WORLD GRAVITY
+#define QS_FRAME_RATE 40
 
 // MARK:- Constants
 const int screenWidth = 800;
@@ -28,6 +30,15 @@ struct Player {
     Vector2 Velocity;
     Vector2 Position;
     Rectangle Rect;
+};
+enum PlayerStates{
+   Idle = 0,
+   Walking,
+   Jumping,
+   Ducking,
+   Skiding,
+   Climbing,
+   Swimming
 };
 // MARK:- Enums
 
@@ -66,6 +77,10 @@ int main() {
   Rectangle a_questionBlockRec_1;
   Rectangle brick_1 = (Rectangle){0,0, brickTex.width, brickTex.height};
   Rectangle a_questionBlockRec_2;
+  Rectangle brick_2 = (Rectangle){0,0, brickTex.width, brickTex.height};
+  Rectangle a_questionBlockRec_3;
+  Rectangle brick_3 = (Rectangle){0,0, brickTex.width, brickTex.height};
+  Rectangle a_questionBlockRec_4;
 
 
 
@@ -90,9 +105,10 @@ int main() {
         player.Position.y = 370;
 
         // Sprite Animations
-
-        AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_1, 20, 3);// Question Block 1
-        AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_2, 20, 3);// Question Block 2
+        AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_1, QS_FRAME_RATE, 3);// Question Block 1
+        AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_2, QS_FRAME_RATE, 3);// Question Block 2
+        AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_3, QS_FRAME_RATE, 3);// Question Block 3
+        AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_4, QS_FRAME_RATE, 3);
 
 
 
@@ -120,7 +136,11 @@ int main() {
           // Interactables and props
           DrawTextureRec(questionBlockTexture, a_questionBlockRec_1, (Vector2){600, 400}, WHITE);  // Draw part of the texture
           DrawTextureRec(brickTex, brick_1, (Vector2){700, 400}, WHITE);
-          DrawTextureRec(questionBlockTexture, a_questionBlockRec_2, (Vector2){700 + brick_1.width, 400}, WHITE);
+          DrawTextureRec(questionBlockTexture, a_questionBlockRec_2, (Vector2){700 + brickTex.width, 400}, WHITE);
+          DrawTextureRec(brickTex, brick_2, (Vector2){700 + brickTex.width + questionBlockTexture.width/3, 400}, WHITE);
+          DrawTextureRec(questionBlockTexture, a_questionBlockRec_3, (Vector2){700 + (brickTex.width * 2) + questionBlockTexture.width/3, 400}, WHITE);
+          DrawTextureRec(brickTex, brick_3, (Vector2){700 + (brickTex.width * 2) + (questionBlockTexture.width/3 * 2), 400}, WHITE);
+          DrawTextureRec(questionBlockTexture, a_questionBlockRec_4, (Vector2){700 + (brickTex.width * 1) + (questionBlockTexture.width/3 * 1), 300}, WHITE);
 
 
           // Player
