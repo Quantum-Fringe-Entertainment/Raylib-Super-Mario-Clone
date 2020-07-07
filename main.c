@@ -27,22 +27,23 @@ enum PlayerStates{
    Skiding,
    Climbing,
    Swimming
-}playerState;
+};
 
 // MARK:- Structs
 struct Player {
     int playerWidth;
     int playerHeight;
-    Vector2 Velocity;
     Vector2 Position;
-    Rectangle Rect;
+    Vector2 Velocity;
+    Rectangle AnimatableRect;
+    Rectangle CollisionRect;
     enum PlayerStates state;
 };
 
 // Function Declarations
 void DrawGround(Texture2D groundTex, Rectangle *groundRect);
 void AnimateSpriteSheetRec(Texture2D spriteSheet, Rectangle *frameRec, int framesSpeed, int frames);
-void AnimatePlayer(Texture2D spriteSheet, enum PlayerStates *state, struct Player *player, int framespeed, int frames);
+void AnimatePlayer(Texture2D spriteSheet, struct Player *player, int framespeed, int frames);
 
 // Main Function
 int main() {
@@ -97,7 +98,6 @@ int main() {
   Rectangle a_questionBlockRec_4;
   Rectangle smallPipeRec_1 = (Rectangle){0,0, pipeSmallTex.width, pipeSmallTex.height};;
 // Characters Rects
-  Rectangle playerCollisionsRect = (Rectangle){0, 0, player.playerWidth, player.playerHeight};
 
 
     // Game Loop
@@ -108,22 +108,8 @@ int main() {
         // Camera Update
         camera.target = (Vector2){ player.Position.x + 20, player.Position.y + 20 };
 
-        // Player Input
-        if (IsKeyDown(KEY_RIGHT)) player.Position.x += 2 * 100 * GetFrameTime();
-        else if (IsKeyDown(KEY_LEFT)) player.Position.x -= 2 * 100 * GetFrameTime();
+        // Player Input and Collisions
 
-        if(IsKeyDown(KEY_SPACE) && CheckCollisionRecs(playerCollisionsRect, groundRect)){
-          printf("Jump key pressed \n");
-          player.Position.y -= 980.0f * GetFrameTime();
-        }
-        // Player Collisions
-        if(!CheckCollisionRecs(playerCollisionsRect, groundRect)){
-          player.Position.y -= G * GetFrameTime() * 10;
-        }
-        // player.Position = (Vector2){player.Velocity.x * GetFrameTime(), player.Velocity.y * GetFrameTime()};
-
-        // Player Collisions Rect Update
-        playerCollisionsRect = (Rectangle){player.Position.x, player.Position.y, player.playerWidth, player.playerHeight};
 
         // Sprite Animations
         AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_1, QS_FRAME_RATE, 3);// Question Block 1
@@ -131,7 +117,7 @@ int main() {
         AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_3, QS_FRAME_RATE, 3);// Question Block 3
         AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_4, QS_FRAME_RATE, 3);// Question Block 4
 
-        AnimatePlayer(playerWalkingTex, &playerState, &player, 25, 3);
+        AnimatePlayer(playerWalkingTex, &player, 15, 3);
 
 
 
@@ -165,7 +151,7 @@ int main() {
           //Characters
           // Player
           // DrawTexture(playerTex, player.Position.x,player.Position.y, RAYWHITE);
-          DrawTextureRec(playerWalkingTex, player.Rect, (Vector2){player.Position.x,player.Position.y}, RAYWHITE);
+          DrawTextureRec(playerWalkingTex, player.AnimatableRect, (Vector2){player.Position.x,player.Position.y}, RAYWHITE);
           DrawRectangleLines(player.Position.x, player.Position.y, player.playerWidth, player.playerHeight, BLACK);
 
           // Enemies
@@ -174,7 +160,8 @@ int main() {
           //Debug Drawings
           DrawRectangleLinesEx(groundRect, 4, RAYWHITE);
           DrawRectangleLinesEx(smallPipeRec_1, 4, RAYWHITE);
-          DrawRectangleRec(GetCollisionRec(player.Rect, groundRect), RAYWHITE);
+          DrawRectangleRec(GetCollisionRec(player.AnimatableRect, groundRect), RAYWHITE);
+          DrawRectangleRec(GetCollisionRec(player.CollisionRect, groundRect), GREEN);
 
           EndMode2D();
 
@@ -226,18 +213,12 @@ void AnimateSpriteSheetRec(Texture2D spriteSheet, Rectangle *frameRec, int frame
    frameRec->x = (float)currentFrame*(float)spriteSheet.width/frames;
 }
 
-void AnimatePlayer(Texture2D spriteSheet, enum PlayerStates *state, struct Player *player, int frameSpeed, int frames){
+void AnimatePlayer(Texture2D spriteSheet, struct Player *player, int frameSpeed, int frames){
 
-  // switch (*state) {
-  //   case Idle:
-  //   {
-  //     break;
-  //   }
-  // }
   static float framesCounterP = 0;
   static int currentFrameP = 3;
 
-  player->Rect = (Rectangle){ 0.0f, 0.0f, (float)spriteSheet.width/frames, (float)spriteSheet.height };
+  player->AnimatableRect = (Rectangle){ 0.0f, 0.0f, (float)spriteSheet.width/frames, (float)spriteSheet.height };
 
   framesCounterP +=  GetFrameTime();
 
@@ -248,5 +229,5 @@ void AnimatePlayer(Texture2D spriteSheet, enum PlayerStates *state, struct Playe
 
        if (currentFrameP < 1) currentFrameP = 3;
    }
-   player->Rect.x = (float)currentFrameP*(float)spriteSheet.width/frames;
+   player->AnimatableRect.x = (float)currentFrameP*(float)spriteSheet.width/frames;
 }
