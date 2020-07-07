@@ -42,7 +42,7 @@ struct Player {
 
 // Function Declarations
 void DrawGround(Texture2D groundTex, Rectangle *groundRect);
-void AnimateSpriteSheetRec(Texture2D spriteSheet, Rectangle *frameRec, int framesSpeed, int frames);
+void AnimateSpriteSheetRec(Texture2D spriteSheet[], Rectangle *frameRec, int framesSpeed, int frames);
 void AnimatePlayer(Texture2D spriteSheet, struct Player *player, int framespeed, int frames);
 
 // Main Function
@@ -109,7 +109,7 @@ int main() {
         camera.target = (Vector2){ player.Position.x + 20, player.Position.y + 20 };
 
         // Player Input and Collisions
-
+        if()
 
         // Sprite Animations
         AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_1, QS_FRAME_RATE, 3);// Question Block 1
@@ -213,7 +213,7 @@ void AnimateSpriteSheetRec(Texture2D spriteSheet, Rectangle *frameRec, int frame
    frameRec->x = (float)currentFrame*(float)spriteSheet.width/frames;
 }
 
-void AnimatePlayer(Texture2D spriteSheet, struct Player *player, int frameSpeed, int frames){
+void AnimatePlayer(Texture2D spriteSheet[], struct Player *player, int frameSpeed, int frames){
 
   static float framesCounterP = 0;
   static int currentFrameP = 3;
@@ -236,6 +236,21 @@ switch (player->state) {
      }
      player->AnimatableRect.x = (float)currentFrameP*(float)spriteSheet.width/frames;
      break;
+  }
+  case Jumping: {
+    break;
+  }
+  case Ducking: {
+    break;
+  }
+  case Skiding: {
+    break;
+  }
+  case Climbing: {
+    break;
+  }
+  case Swimming: {
+    break;
   }
 }
 
