@@ -77,7 +77,7 @@ int main() {
     player.playerHeight = playerTex.height;
     player.Position.x = 670; // Arbitrary start position
     player.Position.y = 470; // Arbitrary start position
-
+    player.state = Walking; // Initial player state
 
 // Camera Settings
    Camera2D camera = { 0 };
@@ -218,16 +218,25 @@ void AnimatePlayer(Texture2D spriteSheet, struct Player *player, int frameSpeed,
   static float framesCounterP = 0;
   static int currentFrameP = 3;
 
-  player->AnimatableRect = (Rectangle){ 0.0f, 0.0f, (float)spriteSheet.width/frames, (float)spriteSheet.height };
+switch (player->state) {
+  case Idle: {
+    break;
+  }
+  case Walking: {
+    player->AnimatableRect = (Rectangle){ 0.0f, 0.0f, (float)spriteSheet.width/frames, (float)spriteSheet.height };
 
-  framesCounterP +=  GetFrameTime();
+    framesCounterP +=  GetFrameTime();
 
-   if (framesCounterP >= (float)frameSpeed/100)
-   {
-       framesCounterP = 0;
-       currentFrameP--;
+     if (framesCounterP >= (float)frameSpeed/100)
+     {
+         framesCounterP = 0;
+         currentFrameP--;
 
-       if (currentFrameP < 1) currentFrameP = 3;
-   }
-   player->AnimatableRect.x = (float)currentFrameP*(float)spriteSheet.width/frames;
+         if (currentFrameP < 1) currentFrameP = 3;
+     }
+     player->AnimatableRect.x = (float)currentFrameP*(float)spriteSheet.width/frames;
+     break;
+  }
+}
+
 }
