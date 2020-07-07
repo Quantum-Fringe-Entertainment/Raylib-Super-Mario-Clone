@@ -14,23 +14,11 @@
 #define G -6  // WORLD GRAVITY
 #define QS_FRAME_RATE 40
 
-// MARK:- Constants
+// MARK:- Global Constants
 const int screenWidth = 800;
 const int screenHeight = 600;
 
-
-// MARK:- Function Declarations
-void DrawGround(Texture2D groundTex, Rectangle *groundRect);
-void AnimateSpriteSheetRec(Texture2D spriteSheet, Rectangle *frameRec, int framesSpeed, int frames);
-
-// MARK:- Structs
-struct Player {
-    int playerWidth;
-    int playerHeight;
-    Vector2 Velocity;
-    Vector2 Position;
-    Rectangle Rect;
-};
+// MARK:- Enums
 enum PlayerStates{
    Idle = 0,
    Walking,
@@ -39,32 +27,56 @@ enum PlayerStates{
    Skiding,
    Climbing,
    Swimming
+}playerState;
+
+// MARK:- Structs
+struct Player {
+    int playerWidth;
+    int playerHeight;
+    Vector2 Velocity;
+    Vector2 Position;
+    Rectangle Rect;
+    enum PlayerStates state;
 };
-// MARK:- Enums
 
+// Function Declarations
+void DrawGround(Texture2D groundTex, Rectangle *groundRect);
+void AnimateSpriteSheetRec(Texture2D spriteSheet, Rectangle *frameRec, int framesSpeed, int frames);
+void AnimatePlayer(Texture2D spriteSheet, enum PlayerStates *state, struct Player *player, int framespeed, int frames);
 
+// Main Function
 int main() {
     InitWindow(screenWidth, screenHeight, "Mario clone");
     SetTargetFPS(60);
 
-// Load Textures (Environment and player)
-   Texture2D playerTex = (Texture2D)LoadTexture("Resources/Character/Mario Idle.png");
+// Load Textures
+   // BG Elements
    Texture2D groundTex = (Texture2D)LoadTexture("Resources/Environment/Ground Tile.png");
-   Texture2D brickTex = (Texture2D)LoadTexture("Resources/Environment/Bricks.png");
    Texture2D hillLargeTexture = (Texture2D)LoadTexture("Resources/Environment/HillLarge.png");
    Texture2D cloudSingleTexture = (Texture2D)LoadTexture("Resources/Environment/CloudSingle.png");
    Texture2D bushTripleTexture = (Texture2D)LoadTexture("Resources/Environment/BushTriple.png");
    Texture2D hillSmallTexture = (Texture2D)LoadTexture("Resources/Environment/HillSmall.png");
+   Texture2D bushSingleTexture = (Texture2D)LoadTexture("Resources/Environment/BushSingle.png");
+   Texture2D cloudTripleTexture = (Texture2D)LoadTexture("Resources/Environment/CloudTriple.png");
+   // Interactables and props
    Texture2D questionBlockTexture = (Texture2D)LoadTexture("Resources/Props/QuestionBlock.png");
+   Texture2D brickTex = (Texture2D)LoadTexture("Resources/Props/Bricks.png");
+   Texture2D pipeSmallTex = (Texture2D)LoadTexture("Resources/Props/Pipe-1.png");
+   //Characters and Enemies
+    Texture2D playerTex = (Texture2D)LoadTexture("Resources/Characters/Mario Idle.png");
+    Texture2D playerWalkingTex = (Texture2D)LoadTexture("Resources/Characters/Mario Walking.png");
 
 //MARK:- Environment Variables
+    // Custom Colors
     Color marioSkyBlue = (Color){107,139,247};
 
 //MARK:- Player Variables
     struct Player player = {};
-    player.playerWidth = playerTex.width;
+    player.playerWidth = playerWalkingTex.width/3;
     player.playerHeight = playerTex.height;
-    player.Position.x = 370; // Arbitrary start position
+    player.Position.x = 670; // Arbitrary start position
+    player.Position.y = 470; // Arbitrary start position
+
 
 // Camera Settings
    Camera2D camera = { 0 };
@@ -73,14 +85,19 @@ int main() {
    camera.zoom = 1.0f;
 
 // Environment Object and props Rects
-  Rectangle groundRect = (Rectangle){0,0, groundTex.width, groundTex.height};;
+// BG Rects
+  Rectangle groundRect = (Rectangle){0,0, groundTex.width, groundTex.height};
+// Props Rects
   Rectangle a_questionBlockRec_1;
-  Rectangle brick_1 = (Rectangle){0,0, brickTex.width, brickTex.height};
+  Rectangle brickRec_1 = (Rectangle){0,0, brickTex.width, brickTex.height};
   Rectangle a_questionBlockRec_2;
-  Rectangle brick_2 = (Rectangle){0,0, brickTex.width, brickTex.height};
+  Rectangle brickRec_2 = (Rectangle){0,0, brickTex.width, brickTex.height};
   Rectangle a_questionBlockRec_3;
-  Rectangle brick_3 = (Rectangle){0,0, brickTex.width, brickTex.height};
+  Rectangle brickRec_3 = (Rectangle){0,0, brickTex.width, brickTex.height};
   Rectangle a_questionBlockRec_4;
+  Rectangle smallPipeRec_1 = (Rectangle){0,0, pipeSmallTex.width, pipeSmallTex.height};;
+// Characters Rects
+  Rectangle playerCollisionsRect = (Rectangle){0, 0, player.playerWidth, player.playerHeight};
 
 
     // Game Loop
@@ -95,25 +112,26 @@ int main() {
         if (IsKeyDown(KEY_RIGHT)) player.Position.x += 2 * 100 * GetFrameTime();
         else if (IsKeyDown(KEY_LEFT)) player.Position.x -= 2 * 100 * GetFrameTime();
 
-        if(IsKeyPressed(KEY_SPACE) && CheckCollisionRecs(player.Rect, groundRect)){
+        if(IsKeyDown(KEY_SPACE) && CheckCollisionRecs(playerCollisionsRect, groundRect)){
           printf("Jump key pressed \n");
-          player.Position.y -= 180.0f;
-          printf("Current height is : %f \n", player.Position.y);
+          player.Position.y -= 980.0f * GetFrameTime();
         }
-
         // Player Collisions
-        if(!CheckCollisionRecs(player.Rect, groundRect)){
-          player.Position.y -= G * GetFrameTime() * 50;
+        if(!CheckCollisionRecs(playerCollisionsRect, groundRect)){
+          player.Position.y -= G * GetFrameTime() * 10;
         }
+        // player.Position = (Vector2){player.Velocity.x * GetFrameTime(), player.Velocity.y * GetFrameTime()};
 
-        // Player Rect Update
-        player.Rect = (Rectangle){player.Position.x, player.Position.y, player.playerWidth, player.playerHeight};
+        // Player Collisions Rect Update
+        playerCollisionsRect = (Rectangle){player.Position.x, player.Position.y, player.playerWidth, player.playerHeight};
 
         // Sprite Animations
         AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_1, QS_FRAME_RATE, 3);// Question Block 1
         AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_2, QS_FRAME_RATE, 3);// Question Block 2
         AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_3, QS_FRAME_RATE, 3);// Question Block 3
         AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_4, QS_FRAME_RATE, 3);// Question Block 4
+
+        AnimatePlayer(playerWalkingTex, &playerState, &player, 25, 3);
 
 
 
@@ -123,41 +141,39 @@ int main() {
           ClearBackground(marioSkyBlue);
           BeginMode2D(camera);
 
-
           // Background elements
           DrawTexture(hillLargeTexture, 100, 530, RAYWHITE);
           DrawTexture(cloudSingleTexture, 360, 230, RAYWHITE);
           DrawTexture(bushTripleTexture, 500, 570, RAYWHITE);
           DrawTexture(hillSmallTexture, 630, 570, RAYWHITE);
           DrawTexture(cloudSingleTexture, 700, 200, RAYWHITE);
+          DrawTexture(bushSingleTexture, 800, 570, RAYWHITE);
+          DrawTexture(cloudTripleTexture, 1000, 200, RAYWHITE);
 
-
-          // Ground
-          DrawGround(groundTex, &groundRect);
-
+          DrawGround(groundTex, &groundRect); // Ground
 
           // Interactables and props
           DrawTextureRec(questionBlockTexture, a_questionBlockRec_1, (Vector2){600, 400}, WHITE);
-
-          DrawTextureRec(brickTex, brick_1, (Vector2){700, 400}, WHITE);
+          DrawTextureRec(brickTex, brickRec_1, (Vector2){700, 400}, WHITE);
           DrawTextureRec(questionBlockTexture, a_questionBlockRec_2, (Vector2){700 + brickTex.width, 400}, WHITE);
-          DrawTextureRec(brickTex, brick_2, (Vector2){700 + brickTex.width + questionBlockTexture.width/3, 400}, WHITE);
+          DrawTextureRec(brickTex, brickRec_2, (Vector2){700 + brickTex.width + questionBlockTexture.width/3, 400}, WHITE);
           DrawTextureRec(questionBlockTexture, a_questionBlockRec_3, (Vector2){700 + (brickTex.width * 2) + questionBlockTexture.width/3, 400}, WHITE);
-          DrawTextureRec(brickTex, brick_3, (Vector2){700 + (brickTex.width * 2) + (questionBlockTexture.width/3 * 2), 400}, WHITE);
-
+          DrawTextureRec(brickTex, brickRec_3, (Vector2){700 + (brickTex.width * 2) + (questionBlockTexture.width/3 * 2), 400}, WHITE);
           DrawTextureRec(questionBlockTexture, a_questionBlockRec_4, (Vector2){700 + (brickTex.width * 1) + (questionBlockTexture.width/3 * 1), 300}, WHITE);
+          DrawTextureRec(pipeSmallTex, smallPipeRec_1, (Vector2){1000, 540}, WHITE);
 
-
+          //Characters
           // Player
-          DrawTexture(playerTex, player.Position.x,player.Position.y, RAYWHITE);
+          // DrawTexture(playerTex, player.Position.x,player.Position.y, RAYWHITE);
+          DrawTextureRec(playerWalkingTex, player.Rect, (Vector2){player.Position.x,player.Position.y}, RAYWHITE);
           DrawRectangleLines(player.Position.x, player.Position.y, player.playerWidth, player.playerHeight, BLACK);
 
           // Enemies
 
 
           //Debug Drawings
-          Rectangle testRect = (Rectangle){groundRect.x, groundRect.y, groundRect.width, groundRect.height};
-          DrawRectangleLinesEx(testRect, 4, RAYWHITE);
+          DrawRectangleLinesEx(groundRect, 4, RAYWHITE);
+          DrawRectangleLinesEx(smallPipeRec_1, 4, RAYWHITE);
           DrawRectangleRec(GetCollisionRec(player.Rect, groundRect), RAYWHITE);
 
           EndMode2D();
@@ -208,4 +224,29 @@ void AnimateSpriteSheetRec(Texture2D spriteSheet, Rectangle *frameRec, int frame
        if (currentFrame > frames - 1) currentFrame = 0;
    }
    frameRec->x = (float)currentFrame*(float)spriteSheet.width/frames;
+}
+
+void AnimatePlayer(Texture2D spriteSheet, enum PlayerStates *state, struct Player *player, int frameSpeed, int frames){
+
+  // switch (*state) {
+  //   case Idle:
+  //   {
+  //     break;
+  //   }
+  // }
+  static float framesCounterP = 0;
+  static int currentFrameP = 3;
+
+  player->Rect = (Rectangle){ 0.0f, 0.0f, (float)spriteSheet.width/frames, (float)spriteSheet.height };
+
+  framesCounterP +=  GetFrameTime();
+
+   if (framesCounterP >= (float)frameSpeed/100)
+   {
+       framesCounterP = 0;
+       currentFrameP--;
+
+       if (currentFrameP < 1) currentFrameP = 3;
+   }
+   player->Rect.x = (float)currentFrameP*(float)spriteSheet.width/frames;
 }
