@@ -109,7 +109,8 @@ int main() {
 		camera.target = (Vector2){ player.Position.x + 20, player.Position.y + 20 };
 
 		// Player Input and Collisions
-		// if()
+		if(IsKeyDown(KEY_LEFT)) player.Position.x -= 2 * GetFrameTime() * 100;
+		else if(IsKeyDown(KEY_RIGHT)) player.Position.x += 2 * GetFrameTime() * 100;
 
 		// Sprite Animations
 		AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_1, QS_FRAME_RATE, 3);// Question Block 1
@@ -204,7 +205,7 @@ void AnimateSpriteSheetRec(Texture2D spriteSheet, Rectangle *frameRec, int frame
 	if (framesCounter >= (float)framesSpeed/100){
 		framesCounter = 0;
 		currentFrame++;
-		
+
 		if (currentFrame > frames - 1) currentFrame = 0;
 	}
 	frameRec->x = (float)currentFrame*(float)spriteSheet.width/frames;
