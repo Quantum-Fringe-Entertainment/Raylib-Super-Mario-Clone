@@ -75,8 +75,8 @@ int main() {
 	struct Player player = {};
 	player.playerWidth = playerWalkingTex.width/3;
 	player.playerHeight = playerTex.height;
-	player.Position.x = 670; // Arbitrary start position
-	player.Position.y = 470; // Arbitrary start position
+	player.Position.x = 770; // Arbitrary start position
+	player.Position.y = 570; // Arbitrary start position
 	player.state = Walking; // Initial player state
 
 	// Camera Settings
