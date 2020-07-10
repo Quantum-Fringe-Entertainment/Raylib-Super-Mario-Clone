@@ -41,9 +41,13 @@ struct Player {
 };
 
 // Function Declarations
+//Core Mechanic Funcitons
 void DrawGround(Texture2D groundTex, Rectangle *groundRect);
 void AnimateSpriteSheetRec(Texture2D spriteSheet, Rectangle *frameRec, int framesSpeed, int frames);
 void AnimatePlayer(Texture2D spriteSheet, struct Player *player, int framespeed, int frames);
+// Utility Functions
+// Game Mechanic Functions
+void Jump(struct Player *player);
 
 // Main Function
 int main() {
@@ -108,7 +112,7 @@ int main() {
         // Camera Update
         camera.target = (Vector2){ player.Position.x + 20, player.Position.y + 20 };
 
-        // Player Input and Collisions
+        // Player Input
         if(IsKeyDown(KEY_LEFT)){
             player.Velocity.x = -2;
             player.state = Walking;
@@ -117,26 +121,39 @@ int main() {
             player.Velocity.x = 2;
             player.state = Walking;
         }
-        else{
-            player.Velocity.x = 0;
+        else player.Velocity.x = 0;
+
+        if(IsKeyPressed(KEY_SPACE)){
+            printf("%s\n", "Started Jumping...");
+            // Start Jumping
+            player.state = Jumping;
+        }
+
+        // Player Collisions
+        if(CheckCollisionRecs(player.CollisionRect, groundRect)){
+            player.Velocity.y = 0;
             player.state = Idle;
         }
 
+        // Player Update
         // update the player collision rect
         player.CollisionRect = (Rectangle){player.Position.x, player.Position.y, player.playerWidth, player.playerHeight};
         // Move Player based on Velocity Vector
         // multiple the veloctiy by the total time elapsed from the last frame and add it to the current position.
         player.Position.x += player.Velocity.x * GetFrameTime() * 100;
         player.Position.y += player.Velocity.y * GetFrameTime() * 100;
+        // Manage Jump mechanics of the player here
+        Jump(&player);
 
 
 
         // Sprite Animations
+        // props animations
         AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_1, QS_FRAME_RATE, 3);// Question Block 1
         AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_2, QS_FRAME_RATE, 3);// Question Block 2
         AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_3, QS_FRAME_RATE, 3);// Question Block 3
         AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_4, QS_FRAME_RATE, 3);// Question Block 4
-
+        // Player animations
         AnimatePlayer(playerWalkingTex, &player, 15, 3);
 
 
@@ -181,7 +198,7 @@ int main() {
             DrawRectangleLinesEx(smallPipeRec_1, 4, RAYWHITE);
             // Player Collision Debug Rectangle
             DrawRectangleLinesEx(player.CollisionRect, 2, GREEN);
-
+            DrawRectangleRec(GetCollisionRec(player.CollisionRect, groundRect), RED);
 
 
 
@@ -194,6 +211,7 @@ int main() {
     return 0;
 }
 
+//Core Mechanic Funcitons
 void DrawGround(Texture2D groundTex, Rectangle *groundRect){
     int groundXIterations = (int)2000/(float)groundTex.width;
     int groundYIterations = 2;//(int)60/(float)groundTex.height; /* Use this logic you need tesselated sprites along the Y-Axis.*/
@@ -270,4 +288,31 @@ void AnimatePlayer(Texture2D spriteSheet, struct Player *player, int frameSpeed,
             break;
         }
     }
+}
+
+// Utility Functions
+// Game Mechanic Functions
+void Jump(struct Player *player){
+    const float timeOfAscent = 0.2;
+    const float timeOfDescent = 0.6;
+
+    static float ta = 0;
+
+    if(player->state == Jumping){
+        // Take a few frames to jump and do not do it instantaneously
+        // make the jump occur to the heighest point over a few frames
+        if(ta < timeOfAscent){
+            printf("ta value is  : %f\n", ta);
+            player->Velocity.y += GetFrameTime() * 100 * -0.2;
+            ta += GetFrameTime();
+        }
+        else if(ta > timeOfAscent && ta < timeOfDescent){
+            player->Velocity.y += GetFrameTime() * 100 * 0.2;
+            ta += GetFrameTime();
+        }
+    }else{
+        player->Velocity.y = 0;
+        ta = 0;
+    }
+
 }
