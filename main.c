@@ -9,6 +9,8 @@
 // Includes and libraries
 #include <stdio.h>
 #include <raylib.h>
+#include "StateMachine.h"
+#include "Player.h"
 
 // MARK:- Macros
 #define G -6  // WORLD GRAVITY
@@ -19,38 +21,21 @@ const int screenWidth = 800;
 const int screenHeight = 600;
 
 // MARK:- Enums
-enum PlayerStates{
-    Idle = 0,
-    Walking,
-    Jumping,
-    Ducking,
-    Skiding,
-    Climbing,
-    Swimming
-};
+
 
 // MARK:- Structs
-struct Player {
-    int playerWidth;
-    int playerHeight;
-    Vector2 Position;
-    Vector2 Velocity;
-    Rectangle AnimatableRect;
-    Rectangle CollisionRect;
-    enum PlayerStates state;
-};
+
 
 // Function Declarations
 //Core Mechanic Funcitons
 void DrawGround(Texture2D groundTex, Rectangle *groundRect);
 void AnimateSpriteSheetRec(Texture2D spriteSheet, Rectangle *frameRec, int framesSpeed, int frames);
-void AnimatePlayer(Texture2D spriteSheet, struct Player *player, int framespeed, int frames);
+
 // Utility Functions
 void CorrectCollisionOverlapping(struct Player *player, Rectangle *groundRect);
-// Game Mechanic Functions
-void Jump(struct Player *player);
+
 // Debug Functions
-void PrintPlayerState(struct Player *player);
+const char* GetPlayerStateString(struct Player *player);
 
 // Main Function
 int main() {
@@ -84,7 +69,7 @@ int main() {
     player.playerHeight = playerTex.height;
     player.Position.x = 770; // Arbitrary start position
     player.Position.y = 470; // Arbitrary start position
-    player.state = Walking; // Initial player state
+    player.state = Jumping; // Initial player state
 
     // Camera Settings
     Camera2D camera = { 0 };
@@ -170,7 +155,6 @@ int main() {
 
             ClearBackground(marioSkyBlue);
             BeginMode2D(camera);
-            DrawFPS(player.Position.x - 350, player.Position.y - 450);
 
             // Background elements
             DrawTexture(hillLargeTexture, 100, 530, RAYWHITE);
@@ -199,18 +183,22 @@ int main() {
 
             // Enemies
 
-
             //Debug Stuff
             DrawRectangleLinesEx(groundRect, 4, RAYWHITE);
             DrawRectangleLinesEx(smallPipeRec_1, 4, RAYWHITE);
             // Player Collision Debug Rectangle
             DrawRectangleLinesEx(player.CollisionRect, 2, GREEN);
             DrawRectangleRec(GetCollisionRec(player.CollisionRect, groundRect), RED);
-            PrintPlayerState(&player);
-
+            // PrintPlayerState(&player);
 
 
             EndMode2D();
+
+            // On Screen Debug Stats
+            DrawRectangleRounded((Rectangle){500,20,250,200}, 0.1f, 5, Fade(GRAY, 0.8));
+            DrawText("Debug Stats", 520, 30, 18, BLACK);
+            DrawText(FormatText("Current FPS is : %d", GetFPS()) , 520, 60, 14, BLACK);
+            DrawText(FormatText("Player State is : %s", GetPlayerStateString(&player)) , 520, 90, 14, BLACK);
 
             EndDrawing();
     }
@@ -258,45 +246,6 @@ void AnimateSpriteSheetRec(Texture2D spriteSheet, Rectangle *frameRec, int frame
     frameRec->x = (float)currentFrame*(float)spriteSheet.width/frames;
 }
 
-void AnimatePlayer(Texture2D spriteSheet, struct Player *player, int frameSpeed, int frames){
-    static float framesCounterP = 0;
-    static int currentFrameP = 3;
-
-    switch (player->state) {
-        case Idle: {
-            break;
-        }
-        case Walking: {
-            player->AnimatableRect = (Rectangle){ 0.0f, 0.0f, (float)spriteSheet.width/frames, (float)spriteSheet.height };
-
-            framesCounterP +=  GetFrameTime();
-
-            if (framesCounterP >= (float)frameSpeed/100){
-            framesCounterP = 0;
-            currentFrameP--;
-
-            if (currentFrameP < 1) currentFrameP = 3;
-            }
-            player->AnimatableRect.x = (float)currentFrameP*(float)spriteSheet.width/frames + 1.4;
-            break;
-        }
-        case Jumping: {
-            break;
-        }
-        case Ducking: {
-            break;
-        }
-        case Skiding: {
-            break;
-        }
-        case Climbing: {
-            break;
-        }
-        case Swimming: {
-            break;
-        }
-    }
-}
 
 // Utility Functions
 void CorrectCollisionOverlapping(struct Player *player, Rectangle *groundRect){
@@ -311,60 +260,30 @@ void CorrectCollisionOverlapping(struct Player *player, Rectangle *groundRect){
     }
 }
 
-// Game Mechanic Functions
-void Jump(struct Player *player){
-    const float timeOfAscent = 0.2;
-    const float timeOfDescent = 0.6;
 
-    static float ta = 0;
 
-    if(player->state == Jumping){
-        // Take a few frames to jump and do not do it instantaneously
-        // make the jump occur to the heighest point over a few frames
-        if(ta < timeOfAscent){
-            printf("ta value is  : %f\n", ta);
-            player->Velocity.y += GetFrameTime() * 100 * -0.2;
-            ta += GetFrameTime();
-        }
-        else if(ta > timeOfAscent && ta < timeOfDescent){
-            player->Velocity.y += GetFrameTime() * 100 * 0.2;
-            ta += GetFrameTime();
-        }
-    }else{
-        player->Velocity.y = 0;
-        ta = 0;
-    }
-}
-//Debug Functions
-void PrintPlayerState(struct Player *player){
+const char* GetPlayerStateString(struct Player *player){
     switch (player->state) {
         case Idle: {
-            printf("The Player State is : Idle\n");
-            break;
+            return "Idle";
         }
         case Walking: {
-            printf("The Player State is : Walking\n");
-            break;
+            return "Walking";
         }
         case Jumping: {
-            printf("The Player State is : Jumping\n");
-            break;
+            return "Jumping";
         }
         case Ducking: {
-            printf("The Player State is : Ducking\n");
-            break;
+            return "Ducking";
         }
         case Skiding: {
-            printf("The Player State is : Skiding\n");
-            break;
+            return "Skiding";
         }
         case Climbing: {
-            printf("The Player State is : Climbing\n");
-            break;
+            return "Climbing";
         }
         case Swimming: {
-            printf("The Player State is : Swimming\n");
-            break;
+            return "Swimming";
         }
     }
 }
