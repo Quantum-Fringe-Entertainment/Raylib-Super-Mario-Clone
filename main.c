@@ -17,17 +17,9 @@
 const int screenWidth = 800;
 const int screenHeight = 600;
 
-// MARK:- Enums
-
-
-// MARK:- Structs
-
-
 // Function Declarations
 //Core Mechanic Funcitons
 void DrawGround(Texture2D groundTex, Rectangle *groundRect);
-
-
 
 // Main Function
 int main() {
@@ -182,7 +174,6 @@ int main() {
             DrawRectangleLinesEx(player.CollisionRect, 2, GREEN);
             DrawRectangleRec(GetCollisionRec(player.CollisionRect, groundRect), RED);
             // PrintPlayerState(&player);
-
 
             EndMode2D();
 
