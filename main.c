@@ -46,8 +46,11 @@ void DrawGround(Texture2D groundTex, Rectangle *groundRect);
 void AnimateSpriteSheetRec(Texture2D spriteSheet, Rectangle *frameRec, int framesSpeed, int frames);
 void AnimatePlayer(Texture2D spriteSheet, struct Player *player, int framespeed, int frames);
 // Utility Functions
+void CorrectCollisionOverlapping(struct Player *player, Rectangle *groundRect);
 // Game Mechanic Functions
 void Jump(struct Player *player);
+// Debug Functions
+void PrintPlayerState(struct Player *player);
 
 // Main Function
 int main() {
@@ -121,16 +124,13 @@ int main() {
             player.Velocity.x = 2;
             player.state = Walking;
         }
-        else player.Velocity.x = 0;
+        else if(IsKeyUp(KEY_LEFT) && IsKeyUp(KEY_RIGHT) && player.state != Jumping){
+            player.Velocity.x = 0;
+            player.state = Idle;
+        }
 
         if(IsKeyPressed(KEY_SPACE)){
             printf("%s\n", "Started Jumping...");
-            // Correct ovelapping collision with the ground or other enviromental props
-            // checking wihth the ground
-            if(CheckCollisionRecs(player.CollisionRect, groundRect)){
-                printf("%s\n", "Collison overlapping with the ground");
-                // correct the overlap offset and set the state 
-            }
             // Start Jumping
             player.state = Jumping;
         }
@@ -151,7 +151,8 @@ int main() {
         // Manage Jump mechanics of the player here
         Jump(&player);
 
-
+        //Correct the player's collisions overlapping with Environment
+        CorrectCollisionOverlapping(&player, &groundRect);
 
         // Sprite Animations
         // props animations
@@ -199,12 +200,13 @@ int main() {
             // Enemies
 
 
-            //Debug Drawings
+            //Debug Stuff
             DrawRectangleLinesEx(groundRect, 4, RAYWHITE);
             DrawRectangleLinesEx(smallPipeRec_1, 4, RAYWHITE);
             // Player Collision Debug Rectangle
             DrawRectangleLinesEx(player.CollisionRect, 2, GREEN);
             DrawRectangleRec(GetCollisionRec(player.CollisionRect, groundRect), RED);
+            PrintPlayerState(&player);
 
 
 
@@ -297,6 +299,18 @@ void AnimatePlayer(Texture2D spriteSheet, struct Player *player, int frameSpeed,
 }
 
 // Utility Functions
+void CorrectCollisionOverlapping(struct Player *player, Rectangle *groundRect){
+    // Correct ovelapping collision with the ground or other enviromental props
+    // checking wihth the ground
+    if(CheckCollisionRecs(player->CollisionRect, *groundRect)){
+        printf("%s\n", "Collison overlapping with the ground");
+        // correct the overlap offset
+        Rectangle overlapRect = GetCollisionRec(player->CollisionRect, *groundRect);
+        player->Position.y -= overlapRect.height;
+        printf("%s\n", "Corrected collision overlapping");
+    }
+}
+
 // Game Mechanic Functions
 void Jump(struct Player *player){
     const float timeOfAscent = 0.2;
@@ -320,5 +334,37 @@ void Jump(struct Player *player){
         player->Velocity.y = 0;
         ta = 0;
     }
-
+}
+//Debug Functions
+void PrintPlayerState(struct Player *player){
+    switch (player->state) {
+        case Idle: {
+            printf("The Player State is : Idle\n");
+            break;
+        }
+        case Walking: {
+            printf("The Player State is : Walking\n");
+            break;
+        }
+        case Jumping: {
+            printf("The Player State is : Jumping\n");
+            break;
+        }
+        case Ducking: {
+            printf("The Player State is : Ducking\n");
+            break;
+        }
+        case Skiding: {
+            printf("The Player State is : Skiding\n");
+            break;
+        }
+        case Climbing: {
+            printf("The Player State is : Climbing\n");
+            break;
+        }
+        case Swimming: {
+            printf("The Player State is : Swimming\n");
+            break;
+        }
+    }
 }
