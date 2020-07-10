@@ -125,6 +125,12 @@ int main() {
 
         if(IsKeyPressed(KEY_SPACE)){
             printf("%s\n", "Started Jumping...");
+            // Correct ovelapping collision with the ground or other enviromental props
+            // checking wihth the ground
+            if(CheckCollisionRecs(player.CollisionRect, groundRect)){
+                printf("%s\n", "Collison overlapping with the ground");
+                // correct the overlap offset and set the state 
+            }
             // Start Jumping
             player.state = Jumping;
         }
