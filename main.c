@@ -7,11 +7,8 @@
 //
 
 // Includes and libraries
-#include <stdio.h>
-#include <raylib.h>
 #include "StateMachine.h"
-#include "Player.h"
-
+#include "CollisionManager.h"
 // MARK:- Macros
 #define G -6  // WORLD GRAVITY
 #define QS_FRAME_RATE 40
@@ -29,13 +26,8 @@ const int screenHeight = 600;
 // Function Declarations
 //Core Mechanic Funcitons
 void DrawGround(Texture2D groundTex, Rectangle *groundRect);
-void AnimateSpriteSheetRec(Texture2D spriteSheet, Rectangle *frameRec, int framesSpeed, int frames);
 
-// Utility Functions
-void CorrectCollisionOverlapping(struct Player *player, Rectangle *groundRect);
 
-// Debug Functions
-const char* GetPlayerStateString(struct Player *player);
 
 // Main Function
 int main() {
@@ -200,7 +192,7 @@ int main() {
             DrawText(FormatText("Current FPS is : %d", GetFPS()) , 520, 60, 14, BLACK);
             DrawText(FormatText("Player State is : %s", GetPlayerStateString(&player)) , 520, 90, 14, BLACK);
 
-            EndDrawing();
+        EndDrawing();
     }
 
     CloseWindow();
@@ -227,63 +219,4 @@ void DrawGround(Texture2D groundTex, Rectangle *groundRect){
     groundRect->y = position.y - groundTex.height;
     groundRect->width = position.x + groundTex.width;
     groundRect->height = 2 * groundTex.height;
-}
-
-void AnimateSpriteSheetRec(Texture2D spriteSheet, Rectangle *frameRec, int framesSpeed, int frames){
-    static float framesCounter = 0;
-    static int currentFrame = 0;
-
-    *frameRec = (Rectangle){ 0.0f, 0.0f, (float)spriteSheet.width/frames, (float)spriteSheet.height };
-
-    framesCounter +=  GetFrameTime();
-
-    if (framesCounter >= (float)framesSpeed/100){
-        framesCounter = 0;
-        currentFrame++;
-
-        if (currentFrame > frames - 1) currentFrame = 0;
-    }
-    frameRec->x = (float)currentFrame*(float)spriteSheet.width/frames;
-}
-
-
-// Utility Functions
-void CorrectCollisionOverlapping(struct Player *player, Rectangle *groundRect){
-    // Correct ovelapping collision with the ground or other enviromental props
-    // checking wihth the ground
-    if(CheckCollisionRecs(player->CollisionRect, *groundRect)){
-        printf("%s\n", "Collison overlapping with the ground");
-        // correct the overlap offset
-        Rectangle overlapRect = GetCollisionRec(player->CollisionRect, *groundRect);
-        player->Position.y -= overlapRect.height;
-        printf("%s\n", "Corrected collision overlapping");
-    }
-}
-
-
-
-const char* GetPlayerStateString(struct Player *player){
-    switch (player->state) {
-        case Idle: {
-            return "Idle";
-        }
-        case Walking: {
-            return "Walking";
-        }
-        case Jumping: {
-            return "Jumping";
-        }
-        case Ducking: {
-            return "Ducking";
-        }
-        case Skiding: {
-            return "Skiding";
-        }
-        case Climbing: {
-            return "Climbing";
-        }
-        case Swimming: {
-            return "Swimming";
-        }
-    }
 }

@@ -11,7 +11,6 @@ void Jump(struct Player *player){
         // Take a few frames to jump and do not do it instantaneously
         // make the jump occur to the heighest point over a few frames
         if(ta < timeOfAscent){
-            printf("ta value is  : %f\n", ta);
             player->Velocity.y += GetFrameTime() * 100 * -0.2;
             ta += GetFrameTime();
         }

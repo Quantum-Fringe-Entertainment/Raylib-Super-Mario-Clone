@@ -39,3 +39,46 @@ void AnimatePlayer(Texture2D spriteSheet, struct Player *player, int frameSpeed,
         }
     }
 }
+
+void AnimateSpriteSheetRec(Texture2D spriteSheet, Rectangle *frameRec, int framesSpeed, int frames){
+    static float framesCounter = 0;
+    static int currentFrame = 0;
+
+    *frameRec = (Rectangle){ 0.0f, 0.0f, (float)spriteSheet.width/frames, (float)spriteSheet.height };
+
+    framesCounter +=  GetFrameTime();
+
+    if (framesCounter >= (float)framesSpeed/100){
+        framesCounter = 0;
+        currentFrame++;
+
+        if (currentFrame > frames - 1) currentFrame = 0;
+    }
+    frameRec->x = (float)currentFrame*(float)spriteSheet.width/frames;
+}
+// Debug Functions
+const char* GetPlayerStateString(struct Player *player){
+    switch (player->state) {
+        case Idle: {
+            return "Idle";
+        }
+        case Walking: {
+            return "Walking";
+        }
+        case Jumping: {
+            return "Jumping";
+        }
+        case Ducking: {
+            return "Ducking";
+        }
+        case Skiding: {
+            return "Skiding";
+        }
+        case Climbing: {
+            return "Climbing";
+        }
+        case Swimming: {
+            return "Swimming";
+        }
+    }
+}
