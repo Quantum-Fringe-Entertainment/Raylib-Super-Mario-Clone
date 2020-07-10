@@ -110,15 +110,25 @@ int main() {
 
         // Player Input and Collisions
         if(IsKeyDown(KEY_LEFT)){
-            player.Position.x -= 2 * GetFrameTime() * 100;
+            player.Velocity.x = -2;
+            player.state = Walking;
         }
         else if(IsKeyDown(KEY_RIGHT)){
-            player.Position.x += 2 * GetFrameTime() * 100;
+            player.Velocity.x = 2;
+            player.state = Walking;
         }
+        else{
+            player.Velocity.x = 0;
+            player.state = Idle;
+        }
+
         // update the player collision rect
         player.CollisionRect = (Rectangle){player.Position.x, player.Position.y, player.playerWidth, player.playerHeight};
-        // move player based ion velocity vector
-        
+        // Move Player based on Velocity Vector
+        // multiple the veloctiy by the total time elapsed from the last frame and add it to the current position.
+        player.Position.x += player.Velocity.x * GetFrameTime() * 100;
+        player.Position.y += player.Velocity.y * GetFrameTime() * 100;
+
 
 
         // Sprite Animations
