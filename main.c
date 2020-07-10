@@ -103,22 +103,31 @@ int main() {
     // Game Loop
     while (!WindowShouldClose())
     {
-    //Update
+        //Update
 
-    // Camera Update
-    camera.target = (Vector2){ player.Position.x + 20, player.Position.y + 20 };
+        // Camera Update
+        camera.target = (Vector2){ player.Position.x + 20, player.Position.y + 20 };
 
-    // Player Input and Collisions
-    if(IsKeyDown(KEY_LEFT)) player.Position.x -= 2 * GetFrameTime() * 100;
-    else if(IsKeyDown(KEY_RIGHT)) player.Position.x += 2 * GetFrameTime() * 100;
+        // Player Input and Collisions
+        if(IsKeyDown(KEY_LEFT)){
+            player.Position.x -= 2 * GetFrameTime() * 100;
+        }
+        else if(IsKeyDown(KEY_RIGHT)){
+            player.Position.x += 2 * GetFrameTime() * 100;
+        }
+        // update the player collision rect
+        player.CollisionRect = (Rectangle){player.Position.x, player.Position.y, player.playerWidth, player.playerHeight};
+        // move player based ion velocity vector
+        
 
-    // Sprite Animations
-    AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_1, QS_FRAME_RATE, 3);// Question Block 1
-    AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_2, QS_FRAME_RATE, 3);// Question Block 2
-    AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_3, QS_FRAME_RATE, 3);// Question Block 3
-    AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_4, QS_FRAME_RATE, 3);// Question Block 4
 
-    AnimatePlayer(playerWalkingTex, &player, 15, 3);
+        // Sprite Animations
+        AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_1, QS_FRAME_RATE, 3);// Question Block 1
+        AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_2, QS_FRAME_RATE, 3);// Question Block 2
+        AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_3, QS_FRAME_RATE, 3);// Question Block 3
+        AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_4, QS_FRAME_RATE, 3);// Question Block 4
+
+        AnimatePlayer(playerWalkingTex, &player, 15, 3);
 
 
 
@@ -127,6 +136,7 @@ int main() {
 
             ClearBackground(marioSkyBlue);
             BeginMode2D(camera);
+            DrawFPS(player.Position.x - 350, player.Position.y - 450);
 
             // Background elements
             DrawTexture(hillLargeTexture, 100, 530, RAYWHITE);
@@ -151,9 +161,7 @@ int main() {
 
             //Characters
             // Player
-            // DrawTexture(playerTex, player.Position.x,player.Position.y, RAYWHITE);
             DrawTextureRec(playerWalkingTex, player.AnimatableRect, (Vector2){player.Position.x,player.Position.y}, RAYWHITE);
-            DrawRectangleLines(player.Position.x, player.Position.y, player.playerWidth, player.playerHeight, BLACK);
 
             // Enemies
 
@@ -161,12 +169,15 @@ int main() {
             //Debug Drawings
             DrawRectangleLinesEx(groundRect, 4, RAYWHITE);
             DrawRectangleLinesEx(smallPipeRec_1, 4, RAYWHITE);
-            DrawRectangleRec(GetCollisionRec(player.AnimatableRect, groundRect), RAYWHITE);
-            DrawRectangleRec(GetCollisionRec(player.CollisionRect, groundRect), GREEN);
+            // Player Collision Debug Rectangle
+            DrawRectangleLinesEx(player.CollisionRect, 2, GREEN);
+
+
+
 
             EndMode2D();
 
-        EndDrawing();
+            EndDrawing();
     }
 
     CloseWindow();
@@ -212,13 +223,12 @@ void AnimateSpriteSheetRec(Texture2D spriteSheet, Rectangle *frameRec, int frame
 }
 
 void AnimatePlayer(Texture2D spriteSheet, struct Player *player, int frameSpeed, int frames){
-
     static float framesCounterP = 0;
     static int currentFrameP = 3;
 
     switch (player->state) {
         case Idle: {
-        break;
+            break;
         }
         case Walking: {
             player->AnimatableRect = (Rectangle){ 0.0f, 0.0f, (float)spriteSheet.width/frames, (float)spriteSheet.height };
@@ -231,23 +241,23 @@ void AnimatePlayer(Texture2D spriteSheet, struct Player *player, int frameSpeed,
 
             if (currentFrameP < 1) currentFrameP = 3;
             }
-            player->AnimatableRect.x = (float)currentFrameP*(float)spriteSheet.width/frames;
+            player->AnimatableRect.x = (float)currentFrameP*(float)spriteSheet.width/frames + 1.4;
             break;
         }
         case Jumping: {
-        break;
+            break;
         }
         case Ducking: {
-        break;
+            break;
         }
         case Skiding: {
-        break;
+            break;
         }
         case Climbing: {
-        break;
+            break;
         }
         case Swimming: {
-        break;
+            break;
         }
     }
 }
