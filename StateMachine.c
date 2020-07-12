@@ -56,6 +56,7 @@ void AnimateSpriteSheetRec(Texture2D spriteSheet, Rectangle *frameRec, int frame
     }
     frameRec->x = (float)currentFrame*(float)spriteSheet.width/frames;
 }
+
 // Debug Functions
 const char* GetPlayerStateString(struct Player *player){
     switch (player->state) {

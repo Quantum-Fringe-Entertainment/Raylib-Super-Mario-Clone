@@ -39,6 +39,8 @@ int main() {
     Texture2D questionBlockTexture = (Texture2D)LoadTexture("Resources/Props/QuestionBlock.png");
     Texture2D brickTex = (Texture2D)LoadTexture("Resources/Props/Bricks.png");
     Texture2D pipeSmallTex = (Texture2D)LoadTexture("Resources/Props/Pipe-1.png");
+    Texture2D pipeMediumTex = (Texture2D)LoadTexture("Resources/Props/medium_pipe.png");
+    Texture2D pipeLargeTex = (Texture2D)LoadTexture("Resources/Props/large_pipe.png");
     //Characters and Enemies
     Texture2D playerTex = (Texture2D)LoadTexture("Resources/Characters/Mario Idle.png");
     Texture2D playerWalkingTex = (Texture2D)LoadTexture("Resources/Characters/Mario Walking.png");
@@ -51,8 +53,8 @@ int main() {
     struct Player player = {};
     player.playerWidth = playerWalkingTex.width/3;
     player.playerHeight = playerTex.height;
-    player.Position.x = 770; // Arbitrary start position
-    player.Position.y = 470; // Arbitrary start position
+    player.Position.x = 1270; // Arbitrary start position
+    player.Position.y = 670; // Arbitrary start position
     player.state = Jumping; // Initial player state
 
     // Camera Settings
@@ -73,6 +75,9 @@ int main() {
     Rectangle brickRec_3 = (Rectangle){0,0, brickTex.width, brickTex.height};
     Rectangle a_questionBlockRec_4;
     Rectangle smallPipeRec_1 = (Rectangle){0,0, pipeSmallTex.width, pipeSmallTex.height};
+    Rectangle mediumPipeRec_1 = (Rectangle){0,0, pipeMediumTex.width, pipeMediumTex.height};
+    Rectangle largePipeRec_1 = (Rectangle){0,0, pipeLargeTex.width, pipeLargeTex.height};
+
     // Characters Rects
 
 
@@ -148,6 +153,7 @@ int main() {
             DrawTexture(cloudSingleTexture, 700, 200, RAYWHITE);
             DrawTexture(bushSingleTexture, 800, 570, RAYWHITE);
             DrawTexture(cloudTripleTexture, 1000, 200, RAYWHITE);
+            DrawTexture(hillLargeTexture, 1920, 530, RAYWHITE);
 
             DrawGround(groundTex, &groundRect); // Ground
 
@@ -159,7 +165,9 @@ int main() {
             DrawTextureRec(questionBlockTexture, a_questionBlockRec_3, (Vector2){700 + (brickTex.width * 2) + questionBlockTexture.width/3, 400}, WHITE);
             DrawTextureRec(brickTex, brickRec_3, (Vector2){700 + (brickTex.width * 2) + (questionBlockTexture.width/3 * 2), 400}, WHITE);
             DrawTextureRec(questionBlockTexture, a_questionBlockRec_4, (Vector2){700 + (brickTex.width * 1) + (questionBlockTexture.width/3 * 1), 300}, WHITE);
-            DrawTextureRec(pipeSmallTex, smallPipeRec_1, (Vector2){1000, 540}, WHITE);
+            DrawTextureRec(pipeSmallTex, smallPipeRec_1, (Vector2){1000, 540}, RAYWHITE);
+            DrawTextureRec(pipeMediumTex, mediumPipeRec_1, (Vector2){1400, 510}, RAYWHITE);
+            DrawTextureRec(pipeLargeTex, largePipeRec_1, (Vector2){1800, 470}, RAYWHITE);
 
             //Characters
             // Player

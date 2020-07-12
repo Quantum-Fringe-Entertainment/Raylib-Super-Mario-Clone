@@ -24,7 +24,6 @@ void Jump(struct Player *player){
     }
 }
 
-
 //Debug Functions
 void PrintPlayerState(struct Player *player){
     switch (player->state) {
