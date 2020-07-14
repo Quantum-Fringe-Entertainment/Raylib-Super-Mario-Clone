@@ -20,6 +20,7 @@ struct Player {
     Rectangle AnimatableRect;
     Rectangle CollisionRect;
     enum PlayerStates state;
+    Texture2D playerTexture;
     bool isJumping;
 };
 

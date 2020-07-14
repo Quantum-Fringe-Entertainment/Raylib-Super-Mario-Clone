@@ -1,15 +1,22 @@
 #include "StateMachine.h"
 
-void AnimatePlayer(Texture2D spriteSheet, struct Player *player, int frameSpeed, int frames){
+void AnimatePlayer(Texture2D spriteSheets[], struct Player *player, int frameSpeed, int frames){
     static float framesCounterP = 0;
     static int currentFrameP = 3;
 
+    Texture2D spriteSheet = spriteSheets[player->state];
+
     switch (player->state) {
         case Idle: {
-            break;
+            player->AnimatableRect = (Rectangle){ 0.0f, 0.0f, (float)spriteSheet.width, (float)spriteSheet.height };
+            player->playerTexture = spriteSheets[player->state];
+            player->playerWidth = (float)spriteSheet.width;
+            player->playerHeight = (float)spriteSheet.height;
         }
         case Walking: {
             player->AnimatableRect = (Rectangle){ 0.0f, 0.0f, (float)spriteSheet.width/frames, (float)spriteSheet.height };
+            player->playerWidth = (float)spriteSheet.width / 3;
+            player->playerHeight = (float)spriteSheet.height;
 
             framesCounterP +=  GetFrameTime();
 
@@ -20,7 +27,7 @@ void AnimatePlayer(Texture2D spriteSheet, struct Player *player, int frameSpeed,
             if (currentFrameP < 1) currentFrameP = 3;
             }
             player->AnimatableRect.x = (float)currentFrameP*(float)spriteSheet.width/frames + 1.4;
-            break;
+            player->playerTexture = spriteSheets[player->state];
         }
         case Jumping: {
             break;

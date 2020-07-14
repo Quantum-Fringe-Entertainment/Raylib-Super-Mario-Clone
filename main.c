@@ -48,7 +48,7 @@ int main() {
     Texture2D pipeMediumTex = (Texture2D)LoadTexture("Resources/Props/medium_pipe.png");
     Texture2D pipeLargeTex = (Texture2D)LoadTexture("Resources/Props/large_pipe.png");
     //Characters and Enemies
-    Texture2D playerTex = (Texture2D)LoadTexture("Resources/Characters/Mario Idle.png");
+    Texture2D playerIdleTex = (Texture2D)LoadTexture("Resources/Characters/Mario Idle.png");
     Texture2D playerWalkingTex = (Texture2D)LoadTexture("Resources/Characters/Mario Walking.png");
 
 //MARK:- Environment Variables
@@ -57,11 +57,11 @@ int main() {
 
     //MARK:- Player Variables
     struct Player player = {};
-    player.playerWidth = playerWalkingTex.width/3;
-    player.playerHeight = playerTex.height;
     player.Position.x = 1270; // Arbitrary start position
     player.Position.y = 670; // Arbitrary start position
     player.state = Jumping; // Initial player state
+    // Player Animaiton state spritesheets
+    Texture2D playerSheets[] = {playerIdleTex, playerWalkingTex};
 
     // Camera Settings
     Camera2D camera = { 0 };
@@ -141,7 +141,7 @@ int main() {
         AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_3, QS_FRAME_RATE, 3);// Question Block 3
         AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_4, QS_FRAME_RATE, 3);// Question Block 4
         // Player animations
-        AnimatePlayer(playerWalkingTex, &player, 15, 3);
+        AnimatePlayer(playerSheets, &player, 15, 3);
 
 
 
@@ -180,7 +180,7 @@ int main() {
 
             //Characters
             // Player
-            DrawTextureRec(playerWalkingTex, player.AnimatableRect, (Vector2){player.Position.x,player.Position.y}, RAYWHITE);
+            DrawTextureRec(player.playerTexture, player.AnimatableRect, (Vector2){player.Position.x,player.Position.y}, RAYWHITE);
 
             // Enemies
 
