@@ -20,6 +20,7 @@ struct Player {
     Rectangle AnimatableRect;
     Rectangle CollisionRect;
     enum PlayerStates state;
+    bool isJumping;
 };
 
 // Game Mechanic Functions

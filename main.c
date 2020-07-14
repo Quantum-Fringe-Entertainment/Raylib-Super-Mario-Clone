@@ -28,13 +28,19 @@ int main() {
 
     // Load Textures
     // BG Elements
-    Texture2D groundTex = (Texture2D)LoadTexture("Resources/Environment/Ground Tile.png");
-    Texture2D hillLargeTexture = (Texture2D)LoadTexture("Resources/Environment/HillLarge.png");
-    Texture2D cloudSingleTexture = (Texture2D)LoadTexture("Resources/Environment/CloudSingle.png");
-    Texture2D bushTripleTexture = (Texture2D)LoadTexture("Resources/Environment/BushTriple.png");
-    Texture2D hillSmallTexture = (Texture2D)LoadTexture("Resources/Environment/HillSmall.png");
     Texture2D bushSingleTexture = (Texture2D)LoadTexture("Resources/Environment/BushSingle.png");
+    Texture2D bushDoubleTexture = (Texture2D)LoadTexture("Resources/Environment/BushDouble.png");
+    Texture2D bushTripleTexture = (Texture2D)LoadTexture("Resources/Environment/BushTriple.png");
+
+    Texture2D cloudSingleTexture = (Texture2D)LoadTexture("Resources/Environment/CloudSingle.png");
+    Texture2D clouDoubleTexture = (Texture2D)LoadTexture("Resources/Environment/CloudDouble.png");
     Texture2D cloudTripleTexture = (Texture2D)LoadTexture("Resources/Environment/CloudTriple.png");
+
+    Texture2D groundTex = (Texture2D)LoadTexture("Resources/Environment/Ground Tile.png");
+
+    Texture2D hillSmallTexture = (Texture2D)LoadTexture("Resources/Environment/HillSmall.png");
+    Texture2D hillLargeTexture = (Texture2D)LoadTexture("Resources/Environment/HillLarge.png");
+
     // Interactables and props
     Texture2D questionBlockTexture = (Texture2D)LoadTexture("Resources/Props/QuestionBlock.png");
     Texture2D brickTex = (Texture2D)LoadTexture("Resources/Props/Bricks.png");
@@ -153,7 +159,10 @@ int main() {
             DrawTexture(cloudSingleTexture, 700, 200, RAYWHITE);
             DrawTexture(bushSingleTexture, 800, 570, RAYWHITE);
             DrawTexture(cloudTripleTexture, 1000, 200, RAYWHITE);
-            DrawTexture(hillLargeTexture, 1920, 530, RAYWHITE);
+            DrawTexture(hillLargeTexture, 1870, 530, RAYWHITE);
+            DrawTexture(clouDoubleTexture, 1400, 200, RAYWHITE);
+            DrawTexture(bushDoubleTexture, 1600, 570, RAYWHITE);
+            DrawTexture(cloudSingleTexture, 1800, 210, RAYWHITE);
 
             DrawGround(groundTex, &groundRect); // Ground
 
@@ -200,7 +209,7 @@ int main() {
 
 //Core Mechanic Funcitons
 void DrawGround(Texture2D groundTex, Rectangle *groundRect){
-    int groundXIterations = (int)2000/(float)groundTex.width;
+    int groundXIterations = (int)3000/(float)groundTex.width;
     int groundYIterations = 2;//(int)60/(float)groundTex.height; /* Use this logic you need tesselated sprites along the Y-Axis.*/
 
     Vector2 position = (Vector2){0,0};
