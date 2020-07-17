@@ -82,10 +82,9 @@ int main() {
     Rectangle brickRec_2 = (Rectangle){0,0, brickTex.width, brickTex.height};
     Rectangle brickRec_3 = (Rectangle){0,0, brickTex.width, brickTex.height};
 
-    Rectangle largePipeRec_1 = (Rectangle){0,0, pipeLargeTex.width, pipeLargeTex.height};
-    Rectangle mediumPipeRec_1 = (Rectangle){0,0, pipeMediumTex.width, pipeMediumTex.height};
-
-    Rectangle smallPipeRec_1 = (Rectangle){0,0, pipeSmallTex.width, pipeSmallTex.height};
+    Rectangle smallPipeRec_1 = (Rectangle){1000, 540, pipeSmallTex.width, pipeSmallTex.height};
+    Rectangle mediumPipeRec_1 = (Rectangle){0, 0, pipeMediumTex.width, pipeMediumTex.height};
+    Rectangle largePipeRec_1 = (Rectangle){0, 0, pipeLargeTex.width, pipeLargeTex.height};
 
     // Characters Rects
 
@@ -123,6 +122,11 @@ int main() {
             player.Velocity.y = 0;
             player.state = Idle;
         }
+        // Collision with pipes
+        if(CheckCollisionRecs(player.CollisionRect, smallPipeRec_1)){
+            player.Velocity.x = 0;
+            player.state = Idle;
+        }
 
         // Player Update
         // update the player collision rect
@@ -135,7 +139,8 @@ int main() {
         Jump(&player);
 
         //Correct the player's collisions overlapping with Environment
-        CorrectCollisionOverlapping(&player, &groundRect);
+        CorrectGroundCollisionOverlapping(&player, &groundRect);
+        CorrectPipeCollision(&player, &smallPipeRec_1);
 
         // Sprite Animations
         // props animations
@@ -145,7 +150,6 @@ int main() {
         AnimateSpriteSheetRec(questionBlockTexture, &a_questionBlockRec_4, QS_FRAME_RATE, 3);// Question Block 4
         // Player animations
         AnimatePlayer(playerSheets, &player, 15, 3);
-
 
 
         //Drawing
@@ -177,7 +181,8 @@ int main() {
             DrawTextureRec(questionBlockTexture, a_questionBlockRec_3, (Vector2){700 + (brickTex.width * 2) + questionBlockTexture.width/3, 400}, WHITE);
             DrawTextureRec(brickTex, brickRec_3, (Vector2){700 + (brickTex.width * 2) + (questionBlockTexture.width/3 * 2), 400}, WHITE);
             DrawTextureRec(questionBlockTexture, a_questionBlockRec_4, (Vector2){700 + (brickTex.width * 1) + (questionBlockTexture.width/3 * 1), 300}, WHITE);
-            DrawTextureRec(pipeSmallTex, smallPipeRec_1, (Vector2){1000, 540}, RAYWHITE);
+
+            DrawTextureV(pipeSmallTex, (Vector2){smallPipeRec_1.x, smallPipeRec_1.y}, RAYWHITE);
             DrawTextureRec(pipeMediumTex, mediumPipeRec_1, (Vector2){1400, 510}, RAYWHITE);
             DrawTextureRec(pipeLargeTex, largePipeRec_1, (Vector2){1800, 470}, RAYWHITE);
 
@@ -189,16 +194,17 @@ int main() {
 
             //Debug Stuff
             DrawRectangleLinesEx(groundRect, 4, RAYWHITE);
-            DrawRectangleLinesEx(smallPipeRec_1, 4, RAYWHITE);
+            DrawRectangleLinesEx(smallPipeRec_1, 2, YELLOW);
             // Player Collision Debug Rectangle
             DrawRectangleLinesEx(player.CollisionRect, 2, GREEN);
             DrawRectangleRec(GetCollisionRec(player.CollisionRect, groundRect), RED);
+            DrawRectangleRec(GetCollisionRec(player.CollisionRect, smallPipeRec_1), RED);
             // PrintPlayerState(&player);
 
             EndMode2D();
 
             // On Screen Debug Stats
-            DrawRectangleRounded((Rectangle){500,20,250,200}, 0.1f, 5, Fade(GRAY, 0.8));
+            DrawRectangleRounded((Rectangle){500,20,250,200}, 0.1f, 5, Fade(GRAY, 0.6));
             DrawText("Debug Stats", 520, 30, 18, BLACK);
             DrawText(FormatText("Current FPS is : %d", GetFPS()) , 520, 60, 14, BLACK);
             DrawText(FormatText("Player State is : %s", GetPlayerStateString(&player)) , 520, 90, 14, BLACK);
