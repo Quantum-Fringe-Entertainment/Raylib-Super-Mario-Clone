@@ -40,7 +40,6 @@ int main() {
 
     Texture2D hillSmallTexture = (Texture2D)LoadTexture("Resources/Environment/HillSmall.png");
     Texture2D hillLargeTexture = (Texture2D)LoadTexture("Resources/Environment/HillLarge.png");
-
     // Interactables and props
     Texture2D questionBlockTexture = (Texture2D)LoadTexture("Resources/Props/QuestionBlock.png");
     Texture2D brickTex = (Texture2D)LoadTexture("Resources/Props/Bricks.png");
@@ -50,6 +49,7 @@ int main() {
     //Characters and Enemies
     Texture2D playerIdleTex = (Texture2D)LoadTexture("Resources/Characters/Mario Idle.png");
     Texture2D playerWalkingTex = (Texture2D)LoadTexture("Resources/Characters/Mario Walking.png");
+    Texture2D playerJumpingTex = (Texture2D)LoadTexture("Resources/Characters/Mario Jump.png");
 
 //MARK:- Environment Variables
     // Custom Colors
@@ -61,7 +61,7 @@ int main() {
     player.Position.y = 670; // Arbitrary start position
     player.state = Jumping; // Initial player state
     // Player Animaiton state spritesheets
-    Texture2D playerSheets[] = {playerIdleTex, playerWalkingTex};
+    Texture2D playerSheets[] = {playerIdleTex, playerWalkingTex, playerJumpingTex};
 
     // Camera Settings
     Camera2D camera = { 0 };
@@ -74,15 +74,18 @@ int main() {
     Rectangle groundRect = (Rectangle){0,0, groundTex.width, groundTex.height};
     // Props Rects
     Rectangle a_questionBlockRec_1;
-    Rectangle brickRec_1 = (Rectangle){0,0, brickTex.width, brickTex.height};
     Rectangle a_questionBlockRec_2;
-    Rectangle brickRec_2 = (Rectangle){0,0, brickTex.width, brickTex.height};
     Rectangle a_questionBlockRec_3;
-    Rectangle brickRec_3 = (Rectangle){0,0, brickTex.width, brickTex.height};
     Rectangle a_questionBlockRec_4;
-    Rectangle smallPipeRec_1 = (Rectangle){0,0, pipeSmallTex.width, pipeSmallTex.height};
-    Rectangle mediumPipeRec_1 = (Rectangle){0,0, pipeMediumTex.width, pipeMediumTex.height};
+
+    Rectangle brickRec_1 = (Rectangle){0,0, brickTex.width, brickTex.height};
+    Rectangle brickRec_2 = (Rectangle){0,0, brickTex.width, brickTex.height};
+    Rectangle brickRec_3 = (Rectangle){0,0, brickTex.width, brickTex.height};
+
     Rectangle largePipeRec_1 = (Rectangle){0,0, pipeLargeTex.width, pipeLargeTex.height};
+    Rectangle mediumPipeRec_1 = (Rectangle){0,0, pipeMediumTex.width, pipeMediumTex.height};
+
+    Rectangle smallPipeRec_1 = (Rectangle){0,0, pipeSmallTex.width, pipeSmallTex.height};
 
     // Characters Rects
 
