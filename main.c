@@ -98,8 +98,8 @@ int main() {
         camera.target = (Vector2){ player.Position.x + 20, player.Position.y + 20 };
 
         // Player Input
-        // move left right only if player is in Idle state
-        if(player.state == Idle){
+        // move left right only if player is in Idle/Walking state
+        if(player.state == Idle || player.state == Walking){
             if(IsKeyDown(KEY_LEFT)){
                 player.Velocity.x = -2;
                 player.state = Walking;
@@ -109,16 +109,19 @@ int main() {
                 player.state = Walking;
             }
         }
-        else if(IsKeyUp(KEY_LEFT) && IsKeyUp(KEY_RIGHT) && player.state != Jumping){
-            player.Velocity.x = 0;
-            player.state = Idle;
-        }
-
+        // Jump Input
         if(IsKeyPressed(KEY_SPACE)){
             printf("%s\n", "Started Jumping...");
             // Start Jumping
             player.state = Jumping;
         }
+        // Base state (Idle) transition
+        if(IsKeyUp(KEY_LEFT) && IsKeyUp(KEY_RIGHT) && player.state != Jumping){
+            player.Velocity.x = 0;
+            player.state = Idle;
+        }
+
+
 
         // Player Collisions
         if(CheckCollisionRecs(player.CollisionRect, groundRect)){
