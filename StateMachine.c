@@ -17,6 +17,7 @@ void AnimatePlayer(Texture2D spriteSheets[], struct Player *player, int frameSpe
         case Walking: {
             player->AnimatableRect = (Rectangle){ 0.0f, 0.0f, (float)spriteSheet.width/frames, (float)spriteSheet.height };
             player->playerTexture = spriteSheets[player->state];
+
             player->playerWidth = (float)spriteSheet.width / 3;
             player->playerHeight = (float)spriteSheet.height;
 

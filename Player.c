@@ -18,6 +18,15 @@ void Jump(struct Player *player){
             player->Velocity.y += GetFrameTime() * 100 * 0.2;
             ta += GetFrameTime();
         }
+        // Enable movement while jumping
+        if(player->state == Jumping){
+            if(IsKeyDown(KEY_LEFT)){
+                player->Velocity.x = -2;
+            }
+            else if(IsKeyDown(KEY_RIGHT)){
+                player->Velocity.x = 2;
+            }
+        }
     }else{
         player->Velocity.y = 0;
         ta = 0;
