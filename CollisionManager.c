@@ -20,6 +20,7 @@ void CorrectPipeCollision(struct Player *player, Rectangle *pipeRect){
     // Use that the collison rect's widht to correct the overlap
     static _Bool didCorrect = FALSE;
     if(CheckCollisionRecs(player->CollisionRect, *pipeRect)){
+        didCorrect = FALSE;
         printf("%s\n", "Collison overlapping with the pipe");
         // Stop the player from moving further first
         player->Velocity.x = 0;
@@ -28,15 +29,17 @@ void CorrectPipeCollision(struct Player *player, Rectangle *pipeRect){
         /* get the current player position and compare the current position of the
         overlapRect to see of it is less than (currentPlayePos + playerWidth/2) to
         decide if its either left/right of the player*/
-        if(overlapRect.x < player->Position.x + (player->playerWidth/2)){
-            //the collision rect is left to the player
-            //now correct the collison
-            player->Position.x += overlapRect.width;
+        if(!didCorrect){
+            if(overlapRect.x < player->Position.x + (player->playerWidth/2)){
+                //the collision rect is left to the player
+                //now correct the collison
+                player->Position.x += overlapRect.width;
+            }
+            else if(overlapRect.x > player->Position.x + (player->playerWidth/2)){
+                //the collision rect is right to the player
+                //now correct the collison
+                player->Position.x -= overlapRect.width;
+            }
         }
-        else if(overlapRect.x > player->Position.x + (player->playerWidth/2)){
-            //the collision rect is right to the player
-            //now correct the collison
-            player->Position.x -= overlapRect.width;
-        }
-    }
+    }else didCorrect = TRUE;
 }

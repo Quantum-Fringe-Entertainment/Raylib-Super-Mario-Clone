@@ -1,9 +1,10 @@
 #include "Player.h"
+#define RAYGUI_IMPLEMENTATION
 
 // Game Mechanic Functions
 void Jump(struct Player *player){
-    const float timeOfAscent = 0.2;
-    const float timeOfDescent = 0.6;
+    const float timeOfAscent = 0.2f;
+    const float timeOfDescent = 0.6f;
 
     static float ta = 0;
 
@@ -11,11 +12,11 @@ void Jump(struct Player *player){
         // Take a few frames to jump and do not do it instantaneously
         // make the jump occur to the heighest point over a few frames
         if(ta < timeOfAscent){
-            player->Velocity.y += GetFrameTime() * 100 * -0.2;
+            player->Velocity.y += GetFrameTime() * 100 * -1;
             ta += GetFrameTime();
         }
         else if(ta > timeOfAscent && ta < timeOfDescent){
-            player->Velocity.y += GetFrameTime() * 100 * 0.2;
+            player->Velocity.y += GetFrameTime() * 100 * 1;
             ta += GetFrameTime();
         }
         // Enable movement while jumping

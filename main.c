@@ -9,6 +9,9 @@
 // Includes and libraries
 #include "StateMachine.h"
 #include "CollisionManager.h"
+#define RAYGUI_IMPLEMENTATION
+#include "raygui.h"
+
 // MARK:- Macros
 #define G -6  // WORLD GRAVITY
 #define QS_FRAME_RATE 40
@@ -25,6 +28,9 @@ void DrawGround(Texture2D groundTex, Rectangle *groundRect);
 int main() {
     InitWindow(screenWidth, screenHeight, "Mario clone");
     SetTargetFPS(60);
+
+    GuiSetStyle(DEFAULT, TEXT_SIZE, 10);
+    GuiSetStyle(DEFAULT, BORDER_WIDTH, 2);
 
     // Load Textures
     // BG Elements
@@ -88,12 +94,12 @@ int main() {
 
     // Characters Rects
 
-
+int changevalue;
     // Game Loop
     while (!WindowShouldClose())
     {
         //Update
-
+        // printf("Change valus is : %d\n", changevalue);
         // Camera Update
         camera.target = (Vector2){ player.Position.x + 20, player.Position.y + 20 };
 
@@ -128,11 +134,7 @@ int main() {
             player.Velocity.y = 0;
             player.state = Idle;
         }
-        // Collision with pipes
-        if(CheckCollisionRecs(player.CollisionRect, smallPipeRec_1)){
-            player.Velocity.x = 0;
-            player.state = Idle;
-        }
+
 
         // Player Update
         // update the player collision rect
@@ -215,6 +217,8 @@ int main() {
             DrawText(FormatText("Current FPS is : %d", GetFPS()) , 520, 60, 14, BLACK);
             DrawText(FormatText("Player State is : %s", GetPlayerStateString(&player)) , 520, 90, 14, BLACK);
 
+
+            GuiValueBox((Rectangle){580,120,150,20}, "Time of Ascent", &changevalue, 10, 100, true);
         EndDrawing();
     }
 
