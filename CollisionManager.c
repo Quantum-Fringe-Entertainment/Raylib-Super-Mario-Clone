@@ -12,6 +12,8 @@ void CorrectGroundCollisionOverlapping(struct Player *player, Rectangle *groundR
         Rectangle overlapRect = GetCollisionRec(player->CollisionRect, *groundRect);
         player->Position.y -= overlapRect.height;
         printf("%s\n", "Corrected collision overlapping");
+        player->Velocity.y = 0;
+        player->state = Idle;
     }
 }
 
@@ -26,10 +28,22 @@ void CorrectPipeCollision(struct Player *player, Rectangle *pipeRect){
         player->Velocity.x = 0;
         // correct the overlap offset
         Rectangle overlapRect = GetCollisionRec(player->CollisionRect, *pipeRect);
-        /* get the current player position and compare the current position of the
-        overlapRect to see of it is less than (currentPlayePos + playerWidth/2) to
-        decide if its either left/right of the player*/
-        if(!didCorrect){
+        /*
+        - Get the current player position and compare the current position of the
+          overlapRect to see of it is less than (currentPlayePos + playerWidth/2) to
+          decide if its either left/right of the player
+
+        - Do this only if the player is not above the pipe (player y cord > pipe y cord),
+          if he is above the pipe make him land on top of the pipe
+
+         */
+
+        if(player->Position.y < pipeRect->y){
+            // didCorrect = TRUE;
+            CorrectGroundCollisionOverlapping(player, pipeRect);
+        }
+
+        if(!didCorrect && player->Position.y > pipeRect->y){
             if(overlapRect.x < player->Position.x + (player->playerWidth/2)){
                 //the collision rect is left to the player
                 //now correct the collison
@@ -41,5 +55,6 @@ void CorrectPipeCollision(struct Player *player, Rectangle *pipeRect){
                 player->Position.x -= overlapRect.width;
             }
         }
-    }else didCorrect = TRUE;
+    }
+    else didCorrect = TRUE;
 }

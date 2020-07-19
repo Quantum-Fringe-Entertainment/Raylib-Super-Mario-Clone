@@ -4,13 +4,15 @@
 #include<raylib.h>
 
 enum PlayerStates{
+// Animatable States
     Idle = 0,
     Walking,
     Jumping,
     Ducking,
     Skiding,
     Climbing,
-    Swimming
+    Swimming,
+// Non-Animatable States
 };
 struct Player {
     int playerWidth;
@@ -25,8 +27,8 @@ struct Player {
 };
 
 // Game Mechanic Functions
-void Jump(struct Player *player);
-
+void Jump(struct Player *player, float *timeOfAscent, float *timeOfDescent);
+void Gravity(struct Player *player, float *timeOfDescent);
 //Debug Functions
 void PrintPlayerState(struct Player *player);
 #endif

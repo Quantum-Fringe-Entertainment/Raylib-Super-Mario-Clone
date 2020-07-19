@@ -6,6 +6,12 @@
 //  Copyright © 2020 phani srikar. All rights reserved.
 //
 
+// Header files hierarchy
+/*
+Player.h<--raylib.h && stdio.h
+CollisionManager.h<--player.h
+StateMachine.h<--player.h
+*/
 // Includes and libraries
 #include "StateMachine.h"
 #include "CollisionManager.h"
@@ -29,8 +35,15 @@ int main() {
     InitWindow(screenWidth, screenHeight, "Mario clone");
     SetTargetFPS(60);
 
-    GuiSetStyle(DEFAULT, TEXT_SIZE, 10);
+    GuiSetStyle(DEFAULT, TEXT_SIZE, 14);
     GuiSetStyle(DEFAULT, BORDER_WIDTH, 2);
+    GuiSetStyle(LABEL,TEXT_COLOR_PRESSED, 0x000000ff);
+    GuiSetStyle(DEFAULT, BORDER_COLOR_PRESSED, 0x000000ff);
+    GuiSetStyle(DEFAULT, TEXT_PADDING, 5);
+
+
+    printf("The colour hex code is : %xN\n", ColorToInt(BLACK));
+
 
     // Load Textures
     // BG Elements
@@ -64,10 +77,12 @@ int main() {
     //MARK:- Player Variables
     struct Player player = {};
     player.Position.x = 1270; // Arbitrary start position
-    player.Position.y = 670; // Arbitrary start position
-    player.state = Jumping; // Initial player state
+    player.Position.y = 600; // Arbitrary start position
+    player.state = Idle; // Initial player state
     // Player Animaiton state spritesheets
     Texture2D playerSheets[] = {playerIdleTex, playerWalkingTex, playerJumpingTex};
+    float timeOfAscent = 0.294f;
+    float timeOfDescent = 0.623f;
 
     // Camera Settings
     Camera2D camera = { 0 };
@@ -94,12 +109,14 @@ int main() {
 
     // Characters Rects
 
-int changevalue;
+    //Debug Variables
+
+
     // Game Loop
     while (!WindowShouldClose())
     {
         //Update
-        // printf("Change valus is : %d\n", changevalue);
+
         // Camera Update
         camera.target = (Vector2){ player.Position.x + 20, player.Position.y + 20 };
 
@@ -129,13 +146,6 @@ int changevalue;
 
 
 
-        // Player Collisions
-        if(CheckCollisionRecs(player.CollisionRect, groundRect)){
-            player.Velocity.y = 0;
-            player.state = Idle;
-        }
-
-
         // Player Update
         // update the player collision rect
         player.CollisionRect = (Rectangle){player.Position.x, player.Position.y, player.playerWidth, player.playerHeight};
@@ -144,7 +154,7 @@ int changevalue;
         player.Position.x += player.Velocity.x * GetFrameTime() * 100;
         player.Position.y += player.Velocity.y * GetFrameTime() * 100;
         // Manage Jump mechanics of the player here
-        Jump(&player);
+        Jump(&player, &timeOfAscent, &timeOfDescent);
 
         //Correct the player's collisions overlapping with Environment
         CorrectGroundCollisionOverlapping(&player, &groundRect);
@@ -212,13 +222,13 @@ int changevalue;
             EndMode2D();
 
             // On Screen Debug Stats
-            DrawRectangleRounded((Rectangle){500,20,250,200}, 0.1f, 5, Fade(GRAY, 0.6));
+            DrawRectangleRounded((Rectangle){500,20,260,200}, 0.1f, 5, Fade(RED, 0.8));
             DrawText("Debug Stats", 520, 30, 18, BLACK);
             DrawText(FormatText("Current FPS is : %d", GetFPS()) , 520, 60, 14, BLACK);
             DrawText(FormatText("Player State is : %s", GetPlayerStateString(&player)) , 520, 90, 14, BLACK);
+            timeOfAscent = GuiSliderBar((Rectangle){610,110,60,20}, "Time of Ascent", FormatText("TOA : %.3f", timeOfAscent), timeOfAscent, 0.001f, 0.5f);
+            timeOfDescent = GuiSliderBar((Rectangle){610,140,60,20}, "Time of Descent", FormatText("TOD : %.3f", timeOfDescent), timeOfDescent, 0.001f, 1.0f);
 
-
-            GuiValueBox((Rectangle){580,120,150,20}, "Time of Ascent", &changevalue, 10, 100, true);
         EndDrawing();
     }
 
