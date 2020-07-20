@@ -41,9 +41,24 @@ int main() {
 
     GuiSetStyle(DEFAULT, TEXT_SIZE, 14);
     GuiSetStyle(DEFAULT, BORDER_WIDTH, 2);
-    GuiSetStyle(LABEL,TEXT_COLOR_PRESSED, 0x000000ff);
-    GuiSetStyle(DEFAULT, BORDER_COLOR_PRESSED, 0x000000ff);
     GuiSetStyle(DEFAULT, TEXT_PADDING, 5);
+    GuiSetStyle(DEFAULT, BACKGROUND_COLOR, 0x000000ff);
+
+
+    GuiSetStyle(DEFAULT,TEXT_COLOR_NORMAL, 0x000000ff);
+    GuiSetStyle(DEFAULT,TEXT_COLOR_FOCUSED, 0x0000ffff); //Slider bar focused color
+    GuiSetStyle(DEFAULT,TEXT_COLOR_PRESSED, 0x000000ff);
+    GuiSetStyle(DEFAULT,TEXT_COLOR_DISABLED, 0x000000ff);
+
+    GuiSetStyle(DEFAULT,BORDER_COLOR_NORMAL, 0x000000ff);
+    GuiSetStyle(DEFAULT,BORDER_COLOR_FOCUSED, 0x000000ff);
+    GuiSetStyle(DEFAULT,BORDER_COLOR_PRESSED, 0x000000ff);
+    GuiSetStyle(DEFAULT,BORDER_COLOR_DISABLED, 0x000000ff);
+
+    GuiSetStyle(DEFAULT,BASE_COLOR_PRESSED, 0xe74c3cff); // Slider bar fill color
+    GuiSetStyle(DEFAULT,BASE_COLOR_NORMAL, 0x000000ff); // Slider bar bg color
+    GuiSetStyle(DEFAULT,BASE_COLOR_FOCUSED, 0x00000ff);
+    GuiSetStyle(DEFAULT,BASE_COLOR_DISABLED, 0x000000ff);
 
 
     printf("The colour hex code is : %xN\n", ColorToInt(BLACK));
@@ -88,7 +103,7 @@ int main() {
     float timeOfAscent = 0.294f;
     float timeOfDescent = 0.623f;
 
-    // Camera Settings
+    // Camera Settingsq
     Camera2D camera = { 0 };
     camera.offset = (Vector2){ screenWidth/2, screenHeight/2 + 200};
     camera.rotation = 0.0f;
@@ -114,7 +129,7 @@ int main() {
     // Characters Rects
 
     //Debug Variables
-
+    bool drawGroundRect;
 
     // Game Loop
     while (!WindowShouldClose())
@@ -144,11 +159,7 @@ int main() {
             // Start Jumping
             player.state = Jumping;
         }
-        else{
-            // He should fall down at the wrath of the Gravity
-            // and porbably avoid collision too
 
-        }
         // Base state (Idle) transition
         if(IsKeyUp(KEY_LEFT) && IsKeyUp(KEY_RIGHT) && player.state != Jumping){
             player.Velocity.x = 0;
@@ -203,17 +214,18 @@ int main() {
             DrawGround(groundTex, &groundRect); // Ground
 
             // Interactables and props
-            DrawTextureRec(questionBlockTexture, a_questionBlockRec_1, (Vector2){600, 400}, WHITE);
             DrawTextureRec(brickTex, brickRec_1, (Vector2){700, 400}, WHITE);
-            DrawTextureRec(questionBlockTexture, a_questionBlockRec_2, (Vector2){700 + brickTex.width, 400}, WHITE);
             DrawTextureRec(brickTex, brickRec_2, (Vector2){700 + brickTex.width + questionBlockTexture.width/3, 400}, WHITE);
-            DrawTextureRec(questionBlockTexture, a_questionBlockRec_3, (Vector2){700 + (brickTex.width * 2) + questionBlockTexture.width/3, 400}, WHITE);
             DrawTextureRec(brickTex, brickRec_3, (Vector2){700 + (brickTex.width * 2) + (questionBlockTexture.width/3 * 2), 400}, WHITE);
-            DrawTextureRec(questionBlockTexture, a_questionBlockRec_4, (Vector2){700 + (brickTex.width * 1) + (questionBlockTexture.width/3 * 1), 300}, WHITE);
 
             DrawTextureV(pipeSmallTex, (Vector2){smallPipeRec_1.x, smallPipeRec_1.y}, RAYWHITE);
             DrawTextureRec(pipeMediumTex, mediumPipeRec_1, (Vector2){1400, 510}, RAYWHITE);
             DrawTextureRec(pipeLargeTex, largePipeRec_1, (Vector2){1800, 470}, RAYWHITE);
+
+            DrawTextureRec(questionBlockTexture, a_questionBlockRec_1, (Vector2){600, 400}, WHITE);
+            DrawTextureRec(questionBlockTexture, a_questionBlockRec_2, (Vector2){700 + brickTex.width, 400}, WHITE);
+            DrawTextureRec(questionBlockTexture, a_questionBlockRec_3, (Vector2){700 + (brickTex.width * 2) + questionBlockTexture.width/3, 400}, WHITE);
+            DrawTextureRec(questionBlockTexture, a_questionBlockRec_4, (Vector2){700 + (brickTex.width * 1) + (questionBlockTexture.width/3 * 1), 300}, WHITE);
 
             //Characters
             // Player
@@ -222,7 +234,7 @@ int main() {
             // Enemies
 
             //Debug Stuff
-            DrawRectangleLinesEx(groundRect, 4, RAYWHITE);
+            if(drawGroundRect) DrawRectangleLinesEx(groundRect, 4, RAYWHITE);
             DrawRectangleLinesEx(smallPipeRec_1, 2, YELLOW);
             // Player Collision Debug Rectangle
             DrawRectangleLinesEx(player.CollisionRect, 2, GREEN);
@@ -232,14 +244,17 @@ int main() {
 
             EndMode2D();
 
-            // On Screen Debug Stats
-            DrawRectangleRounded((Rectangle){500,20,260,200}, 0.1f, 5, Fade(RED, 0.8));
-            DrawText("Debug Stats", 520, 30, 18, BLACK);
+            // On Screen Debug Statistics
+            DrawRectangleRounded((Rectangle){500,20,290,220}, 0.07f, 5, Fade(YELLOW, 0.8));
+            DrawText("Debug Stats", 510, 30, 18, BLACK);
             DrawText(FormatText("Current FPS is : %d", GetFPS()) , 520, 60, 14, BLACK);
             DrawText(FormatText("Player State is : %s", GetPlayerStateString(&player)) , 520, 90, 14, BLACK);
-            timeOfAscent = GuiSliderBar((Rectangle){610,110,60,20}, "Time of Ascent", FormatText("TOA : %.3f", timeOfAscent), timeOfAscent, 0.001f, 0.5f);
-            timeOfDescent = GuiSliderBar((Rectangle){610,140,60,20}, "Time of Descent", FormatText("TOD : %.3f", timeOfDescent), timeOfDescent, 0.001f, 1.0f);
+            timeOfAscent = GuiSliderBar((Rectangle){625,110,60,20}, "Time of Ascent", FormatText("TOA : %.3f", timeOfAscent), timeOfAscent, 0.001f, 0.5f);
+            timeOfDescent = GuiSliderBar((Rectangle){635,140,60,20}, "Time of Descent", FormatText("TOD : %.3f", timeOfDescent), timeOfDescent, 0.001f, 1.0f);
+            DrawText(FormatText("is Player Grounded : %s", player.isGrounded ? "True" : "False") , 520, 170, 14, BLACK);
+            drawGroundRect = GuiCheckBox((Rectangle){ 520, 200, 20, 20 }, "Show Ground Rect", drawGroundRect);
 
+            printf("player grounded state is : %d\n", player.isGrounded);
         EndDrawing();
     }
 

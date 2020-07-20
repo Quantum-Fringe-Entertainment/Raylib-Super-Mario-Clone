@@ -5,22 +5,26 @@
 
 void CorrectGroundCollisionOverlapping(struct Player *player, Rectangle *groundRect){
     // Correct ovelapping collision with the ground or other enviromental props
-    // checking with the ground
     if(CheckCollisionRecs(player->CollisionRect, *groundRect)){
         printf("%s\n", "Collison overlapping with the ground");
         // correct the overlap offset
         Rectangle overlapRect = GetCollisionRec(player->CollisionRect, *groundRect);
         player->Position.y -= overlapRect.height;
         printf("%s\n", "Corrected collision overlapping");
+        player->isGrounded = true;
         player->Velocity.y = 0;
         player->state = Idle;
+    }
+    else{
+        printf("%s\n", "Not touching the ground");
+        player->isGrounded = false;
     }
 }
 
 void CorrectPipeCollision(struct Player *player, Rectangle *pipeRect){
     // Check if the colllision is occuring to right of left of player
     // Use that the collison rect's widht to correct the overlap
-    static _Bool didCorrect = FALSE;
+    static bool didCorrect = FALSE;
     if(CheckCollisionRecs(player->CollisionRect, *pipeRect)){
         didCorrect = FALSE;
         printf("%s\n", "Collison overlapping with the pipe");
@@ -37,7 +41,6 @@ void CorrectPipeCollision(struct Player *player, Rectangle *pipeRect){
           if he is above the pipe make him land on top of the pipe
 
          */
-
         if(player->Position.y < pipeRect->y){
             // didCorrect = TRUE;
             CorrectGroundCollisionOverlapping(player, pipeRect);

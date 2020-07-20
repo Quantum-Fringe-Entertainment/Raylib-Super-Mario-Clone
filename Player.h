@@ -5,9 +5,8 @@
 
 enum Direction{
     LEFT = -1,
-    RIGHT =
+    RIGHT = 1
 };
-
 enum PlayerStates{
 // Animatable States
     Idle = 0,
@@ -22,7 +21,7 @@ enum PlayerStates{
 struct Player {
     int playerWidth;
     int playerHeight;
-    bool isJumping;
+    bool isGrounded;
 
     Vector2 Position;
     Vector2 Velocity;
