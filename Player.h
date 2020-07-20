@@ -5,7 +5,7 @@
 
 enum Direction{
     LEFT = -1,
-    RIGHT = 1
+    RIGHT =
 };
 
 enum PlayerStates{
@@ -22,14 +22,18 @@ enum PlayerStates{
 struct Player {
     int playerWidth;
     int playerHeight;
+    bool isJumping;
+
     Vector2 Position;
     Vector2 Velocity;
+
     Rectangle AnimatableRect;
     Rectangle CollisionRect;
-    enum PlayerStates state;
+
     Texture2D playerTexture;
+
+    enum PlayerStates state;
     enum Direction dir;
-    bool isJumping;
 };
 
 // Game Mechanic Functions
