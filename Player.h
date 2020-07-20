@@ -3,6 +3,11 @@
 #include <stdio.h>
 #include<raylib.h>
 
+enum Direction{
+    LEFT = -1,
+    RIGHT = 1
+};
+
 enum PlayerStates{
 // Animatable States
     Idle = 0,
@@ -23,6 +28,7 @@ struct Player {
     Rectangle CollisionRect;
     enum PlayerStates state;
     Texture2D playerTexture;
+    enum Direction dir;
     bool isJumping;
 };
 

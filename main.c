@@ -1,24 +1,28 @@
-//
-//  main.c
-//  Super Mario Clone
-//
-//  Created by phani srikar on 04/06/20.
-//  Copyright © 2020 phani srikar. All rights reserved.
-//
-
-// Header files hierarchy
 /*
+main.c
+Super Mario Clone
+
+Created by phani srikar on 04/06/20.
+Copyright © 2020 phani srikar. All rights reserved.
+*/
+
+
+/*
+Header files hierarchy
+
 Player.h<--raylib.h && stdio.h
 CollisionManager.h<--player.h
 StateMachine.h<--player.h
 */
+
+
 // Includes and libraries
 #include "StateMachine.h"
 #include "CollisionManager.h"
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
 
-// MARK:- Macros
+//  Macros
 #define G -6  // WORLD GRAVITY
 #define QS_FRAME_RATE 40
 
@@ -126,10 +130,12 @@ int main() {
             if(IsKeyDown(KEY_LEFT)){
                 player.Velocity.x = -2;
                 player.state = Walking;
+                player.dir = LEFT;
             }
             else if(IsKeyDown(KEY_RIGHT)){
                 player.Velocity.x = 2;
                 player.state = Walking;
+                player.dir = RIGHT;
             }
         }
         // Jump Input
@@ -137,6 +143,11 @@ int main() {
             printf("%s\n", "Started Jumping...");
             // Start Jumping
             player.state = Jumping;
+        }
+        else{
+            // He should fall down at the wrath of the Gravity
+            // and porbably avoid collision too
+
         }
         // Base state (Idle) transition
         if(IsKeyUp(KEY_LEFT) && IsKeyUp(KEY_RIGHT) && player.state != Jumping){

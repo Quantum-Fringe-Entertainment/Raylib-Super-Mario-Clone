@@ -4,22 +4,19 @@ void AnimatePlayer(Texture2D spriteSheets[], struct Player *player, int frameSpe
     static float framesCounterP = 0;
     static int currentFrameP = 3;
 
-    Texture2D spriteSheet = spriteSheets[player->state];
+    player->playerTexture = spriteSheets[player->state];
 
     switch (player->state) {
         case Idle: {
-            player->AnimatableRect = (Rectangle){ 0.0f, 0.0f, (float)spriteSheet.width, (float)spriteSheet.height };
-            player->playerTexture = spriteSheets[player->state];
-            player->playerWidth = (float)spriteSheet.width;
-            player->playerHeight = (float)spriteSheet.height;
+            player->AnimatableRect = (Rectangle){ 0.0f, 0.0f, (float)player->playerTexture.width * player->dir, (float)player->playerTexture.height };
+            player->playerWidth = (float)player->playerTexture.width;
+            player->playerHeight = (float)player->playerTexture.height;
             break;
         }
         case Walking: {
-            player->AnimatableRect = (Rectangle){ 0.0f, 0.0f, (float)spriteSheet.width/frames, (float)spriteSheet.height };
-            player->playerTexture = spriteSheets[player->state];
-
-            player->playerWidth = (float)spriteSheet.width / 3;
-            player->playerHeight = (float)spriteSheet.height;
+            player->AnimatableRect = (Rectangle){ 0.0f, 0.0f, (float)player->playerTexture.width * player->dir/frames, (float)player->playerTexture.height };
+            player->playerWidth = (float)player->playerTexture.width / 3;
+            player->playerHeight = (float)player->playerTexture.height;
 
             framesCounterP +=  GetFrameTime();
 
@@ -29,14 +26,13 @@ void AnimatePlayer(Texture2D spriteSheets[], struct Player *player, int frameSpe
 
             if (currentFrameP < 1) currentFrameP = 3;
             }
-            player->AnimatableRect.x = (float)currentFrameP*(float)spriteSheet.width/frames + 1.4;
+            player->AnimatableRect.x = (float)currentFrameP*(float)player->playerTexture.width/frames + 1.4;
             break;
         }
         case Jumping: {
-            player->AnimatableRect = (Rectangle){ 0.0f, 0.0f, (float)spriteSheet.width, (float)spriteSheet.height };
-            player->playerTexture = spriteSheets[player->state];
-            player->playerWidth = (float)spriteSheet.width;
-            player->playerHeight = (float)spriteSheet.height;
+            player->AnimatableRect = (Rectangle){ 0.0f, 0.0f, (float)player->playerTexture.width * player->dir, (float)player->playerTexture.height };
+            player->playerWidth = (float)player->playerTexture.width;
+            player->playerHeight = (float)player->playerTexture.height;
             break;
         }
         case Ducking: {
