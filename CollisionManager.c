@@ -16,7 +16,6 @@ void CorrectGroundCollisionOverlapping(struct Player *player, Rectangle *groundR
         player->state = Idle;
     }
     else{
-        printf("%s\n", "Not touching the ground");
         player->isGrounded = false;
     }
 }

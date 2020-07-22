@@ -61,10 +61,10 @@ int main() {
     GuiSetStyle(DEFAULT,BASE_COLOR_DISABLED, 0x000000ff);
 
 
-    printf("The colour hex code is : %xN\n", ColorToInt(BLACK));
-
 
     // Load Textures
+    // Raylib logo
+    Texture2D RaylibLogoTexture = (Texture2D)LoadTexture("Resources/raylib_48x48.png");
     // BG Elements
     Texture2D bushSingleTexture = (Texture2D)LoadTexture("Resources/Environment/BushSingle.png");
     Texture2D bushDoubleTexture = (Texture2D)LoadTexture("Resources/Environment/BushDouble.png");
@@ -242,7 +242,12 @@ int main() {
             DrawRectangleRec(GetCollisionRec(player.CollisionRect, smallPipeRec_1), RED);
             // PrintPlayerState(&player);
 
+
+            // Draw made with Raylib Logo
+
             EndMode2D();
+            DrawText("Made with ", 660, 580, 18, BLACK);
+            DrawTexture(RaylibLogoTexture, screenWidth/2 + 350, screenHeight/2 + 250, RAYWHITE);
 
             // On Screen Debug Statistics
             DrawRectangleRounded((Rectangle){500,20,290,220}, 0.07f, 5, Fade(YELLOW, 0.8));
@@ -254,7 +259,6 @@ int main() {
             DrawText(FormatText("is Player Grounded : %s", player.isGrounded ? "True" : "False") , 520, 170, 14, BLACK);
             drawGroundRect = GuiCheckBox((Rectangle){ 520, 200, 20, 20 }, "Show Ground Rect", drawGroundRect);
 
-            printf("player grounded state is : %d\n", player.isGrounded);
         EndDrawing();
     }
 
