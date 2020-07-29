@@ -214,7 +214,6 @@ bool RayVsRect2D(const Vector2 ray_origin, const Vector2 ray_dir, const Rectangl
 bool DynamicRectVsRect(const Rectangle sourceRect, const Vector2 sourceRectVelocity, const Rectangle targetRect, Vector2 *contact_point, Vector2 *contact_normal, float *near_contact_time, Vector2 probableContactPoints[]){
 
     // if(sourceRectVelocity.x == 0 && sourceRectVelocity.y == 0){ return false; }
-    // check te collisions agains the expanded target rectanle, useful to correct collisions based on contact time
     Rectangle expanded_target;
     expanded_target.x = targetRect.x - (sourceRect.width/2);
     expanded_target.y = targetRect.y - (sourceRect.height/2);
