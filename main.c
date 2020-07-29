@@ -269,7 +269,7 @@ int main() {
 //Core Mechanic Funcitons
 void DrawGround(Texture2D groundTex, Rectangle *groundRect){
     int groundXIterations = (int)3000/(float)groundTex.width;
-    int groundYIterations = 2;//(int)60/(float)groundTex.height; /* Use this logic you need tesselated sprites along the Y-Axis.*/
+    int groundYIterations = 2;//(int)60/(float)groundTex.height; /* Use this logic if you need tesselated sprites along the Y-Axis.*/
 
     Vector2 position = (Vector2){0,0};
     //Ground for player
