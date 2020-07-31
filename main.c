@@ -1,18 +1,20 @@
 /*
 main.c
 Super Mario Clone
-
 Created by phani srikar on 04/06/20.
 Copyright © 2020 phani srikar. All rights reserved.
-*/
 
+    CHANGELOG :
 
-/*
-Header files hierarchy
+    - 31-7-2020
+    * Fixed the main script to get DynamicRectVsRect working, no issues with the current RayCollision functions
+    * Fixed the DynamicRectVsRect behaviour, seems the behaviour was to be changed in the Main script
+    * Documented DynamicRectVsRect and rearranged arguments in RayVsRect
 
-Player.h<--raylib.h && stdio.h
-CollisionManager.h<--player.h
-StateMachine.h<--player.h
+    Header files hierarchy
+    * Player.h<--raylib.h && stdio.h
+    * CollisionManager.h<--player.h
+    * StateMachine.h<--player.h
 */
 
 
@@ -263,6 +265,7 @@ int main() {
     }
 
     CloseWindow();
+    // system("clear");
     return 0;
 }
 

@@ -1,5 +1,17 @@
-#include "CollisionManager.h"
+/*
+    CHANGELOG :
 
+    - 31-7-2020
+    * Fixed the main script to get DynamicRectVsRect working, no issues with the current RayCollision functions
+    * Fixed the DynamicRectVsRect behaviour, seems the behaviour was to be changed in the Main script
+    * Documented DynamicRectVsRect and rearranged arguments in RayVsRect
+*/
+
+#include "CollisionManager.h"
+/*
+* define this macro RAY_COLLISION_CALCULATION_DEBUG_STATS
+* if you want to enable the ray collision calculations printed as debug data
+*/
 #define FALSE 0
 #define TRUE 1
 
@@ -61,8 +73,9 @@ void CorrectPipeCollision(struct Player *player, Rectangle *pipeRect){
     else didCorrect = TRUE;
 }
 
+//----------------------------------------------------------------------------//
 
-// helper functions
+// Helper Functions
 void SwapFloatValue(float *a, float *b){
     float t = *a;
     *a = *b;
@@ -101,7 +114,7 @@ float absF(float num){
     - Also provides additonal data such as the contact point and contact normal and the probale collison points
 
     - PARAMETER ray_origin : A Vector2 defining the origin/start point of the Ray
-    - PARAMETER rayA_dir : A Vector2 defining the direction of the Ray
+    - PARAMETER ray_dir : A Vector2 defining the direction of the Ray
     - PARAMETER targetRect : The target rectangle against which we are checking the collision
     - PARAMETER contact_point(Pointer) : A Vector2 that stores the contact point if the collision occurs with the rectangle
     - PARAMETER contact_normal(Pointer) : A Vector2 that stores the contact normal of the rectangle surface if the collision occurs with the rectangle
@@ -111,7 +124,7 @@ float absF(float num){
     - Also updates the contact_point, contact_normal and the probableContactPoints pointers
 
 */
-bool RayVsRect2D(const Vector2 ray_origin, const Vector2 ray_dir, const Rectangle targetRect, Vector2 *contact_point,Vector2 *contact_normal, float *near_contact_time, Vector2 probableContactPoints[]){
+bool RayVsRect2D(const Vector2 ray_origin, const Vector2 ray_dir, const Rectangle targetRect, Vector2* contact_point,Vector2* contact_normal, float* near_contact_time, Vector2 probableContactPoints[]){
 
     /*
     * The t in the P(t) = P + D.t
@@ -170,14 +183,14 @@ bool RayVsRect2D(const Vector2 ray_origin, const Vector2 ray_dir, const Rectangl
     float Hit_Far_Y_Position = ray_origin.y + (ray_dir.y * t_hit_far);
 
     // Debugging the calculations
-    if(0){
-    printf("The delta_t1_X is : %f | t_hit_near_X is : %f | ray_dir.x is : %f | rayOrigin.x is : %f | Hit_Near_X_Position is : %f \n", delta_t1_X, t_hit_near_X, ray_dir.x, ray_origin.x, Hit_Near_X_Position);
-    printf("The delta_t1_Y is : %f | t_hit_near_Y is : %f | ray_dir.y is : %f | rayOrigin.y is : %f | Hit_Near_Y_Position is : %f \n", delta_t1_Y, t_hit_near_Y, ray_dir.y, ray_origin.y, Hit_Near_Y_Position);
-    printf("t_hit_near is : %f \n", *near_contact_time);
-    printf("The delta_t2_X is : %f | t_hit_far_X is : %f | ray_dir.x is : %f | rayOrigin.x is : %f | Hit_Far_X_Position is : %f \n", delta_t2_X, t_hit_far_X, ray_dir.x, ray_origin.x, Hit_Far_X_Position);
-    printf("The delta_t2_Y is : %f | t_hit_far_Y is : %f | ray_dir.y is : %f | rayOrigin.y is : %f | Hit_Far_Y_Position is : %f \n", delta_t2_Y, t_hit_far_Y, ray_dir.y, ray_origin.y, Hit_Far_Y_Position);
-    printf("t_hit_far is : %f \n", t_hit_far);
-}
+    #ifdef RAY_COLLISION_CALCULATION_DEBUG_STATS
+        printf("The delta_t1_X is : %f | t_hit_near_X is : %f | ray_dir.x is : %f | rayOrigin.x is : %f | Hit_Near_X_Position is : %f \n", delta_t1_X, t_hit_near_X, ray_dir.x, ray_origin.x, Hit_Near_X_Position);
+        printf("The delta_t1_Y is : %f | t_hit_near_Y is : %f | ray_dir.y is : %f | rayOrigin.y is : %f | Hit_Near_Y_Position is : %f \n", delta_t1_Y, t_hit_near_Y, ray_dir.y, ray_origin.y, Hit_Near_Y_Position);
+        printf("t_hit_near is : %f \n", *near_contact_time);
+        printf("The delta_t2_X is : %f | t_hit_far_X is : %f | ray_dir.x is : %f | rayOrigin.x is : %f | Hit_Far_X_Position is : %f \n", delta_t2_X, t_hit_far_X, ray_dir.x, ray_origin.x, Hit_Far_X_Position);
+        printf("The delta_t2_Y is : %f | t_hit_far_Y is : %f | ray_dir.y is : %f | rayOrigin.y is : %f | Hit_Far_Y_Position is : %f \n", delta_t2_Y, t_hit_far_Y, ray_dir.y, ray_origin.y, Hit_Far_Y_Position);
+        printf("t_hit_far is : %f \n", t_hit_far);
+    #endif
 
     // Generate Vectors using the near and far collision points
     Vector2 Near_Hit_Vector = (Vector2){Hit_Near_X_Position, Hit_Near_Y_Position};
@@ -210,21 +223,27 @@ bool RayVsRect2D(const Vector2 ray_origin, const Vector2 ray_dir, const Rectangl
 }
 /*
     DESCRIPTION : A function to detect Collisions between a Dynamic Rectangle and a static Rectangle.
+    ISSUE : Using this function causes contact_point to be detected on the expanded_rectangle, please resolve it properly if you need it on the target itself
 */
-bool DynamicRectVsRect(const Rectangle sourceRect, const Vector2 sourceRectVelocity, const Rectangle targetRect, Vector2 *contact_point, Vector2 *contact_normal, float *near_contact_time, Vector2 probableContactPoints[]){
+bool DynamicRectVsRect(const Rectangle sourceRect, const Vector2 sourceRectVelocity, const Rectangle targetRect, Vector2* contact_point, Vector2* contact_normal, float* near_contact_time, Vector2 probableContactPoints[]){
 
-    // if(sourceRectVelocity.x == 0 && sourceRectVelocity.y == 0){ return false; }
+    // We assume that the soruce rectanle is always dynamic while it is in collison
+    if(sourceRectVelocity.x == 0 && sourceRectVelocity.y == 0){ return false; }
+    /*
+    * Using a clever trick by expanding the target rect by dimension of source rect
+    * to detect collison and correct overlapping using the contact_time and subtrating the relative Velocity
+    */
     Rectangle expanded_target;
     expanded_target.x = targetRect.x - (sourceRect.width/2);
     expanded_target.y = targetRect.y - (sourceRect.height/2);
     expanded_target.width = targetRect.width + sourceRect.width;
     expanded_target.height = targetRect.height + sourceRect.height;
-
+    // Now check the collion against the source rectangle velocity vector ray and the expanded rectangle to avoid any unresolvable Collisions
     Vector2 ray_or = (Vector2){sourceRect.x + (sourceRect.width/2), sourceRect.y + (sourceRect.height/2)};
     Vector2 ray_di = (Vector2){sourceRectVelocity.x, sourceRectVelocity.y};
     if(RayVsRect2D(ray_or, ray_di, expanded_target, contact_point, contact_normal, near_contact_time, probableContactPoints)){
         return true;
     }
-
+    // If the collision doesn't occur return false
     return false;
 }
