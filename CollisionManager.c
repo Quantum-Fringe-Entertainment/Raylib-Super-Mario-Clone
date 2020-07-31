@@ -223,12 +223,13 @@ bool RayVsRect2D(const Vector2 ray_origin, const Vector2 ray_dir, const Rectangl
 }
 /*
     DESCRIPTION : A function to detect Collisions between a Dynamic Rectangle and a static Rectangle.
-    ISSUE : Using this function causes contact_point to be detected on the expanded_rectangle, please resolve it properly if you need it on the target itself
+    FIXME : Using this function causes contact_point to be detected on the expanded_rectangle, please resolve it properly if you need it on the target itself
 */
 bool DynamicRectVsRect(const Rectangle sourceRect, const Vector2 sourceRectVelocity, const Rectangle targetRect, Vector2* contact_point, Vector2* contact_normal, float* near_contact_time, Vector2 probableContactPoints[]){
 
     // We assume that the soruce rectanle is always dynamic while it is in collison
     if(sourceRectVelocity.x == 0 && sourceRectVelocity.y == 0){ return false; }
+
     /*
     * Using a clever trick by expanding the target rect by dimension of source rect
     * to detect collison and correct overlapping using the contact_time and subtrating the relative Velocity
@@ -238,12 +239,14 @@ bool DynamicRectVsRect(const Rectangle sourceRect, const Vector2 sourceRectVeloc
     expanded_target.y = targetRect.y - (sourceRect.height/2);
     expanded_target.width = targetRect.width + sourceRect.width;
     expanded_target.height = targetRect.height + sourceRect.height;
+
     // Now check the collion against the source rectangle velocity vector ray and the expanded rectangle to avoid any unresolvable Collisions
     Vector2 ray_or = (Vector2){sourceRect.x + (sourceRect.width/2), sourceRect.y + (sourceRect.height/2)};
     Vector2 ray_di = (Vector2){sourceRectVelocity.x, sourceRectVelocity.y};
     if(RayVsRect2D(ray_or, ray_di, expanded_target, contact_point, contact_normal, near_contact_time, probableContactPoints)){
         return true;
     }
+
     // If the collision doesn't occur return false
     return false;
 }

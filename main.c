@@ -7,9 +7,8 @@ Copyright © 2020 phani srikar. All rights reserved.
     CHANGELOG :
 
     - 31-7-2020
-    * Fixed the main script to get DynamicRectVsRect working, no issues with the current RayCollision functions
-    * Fixed the DynamicRectVsRect behaviour, seems the behaviour was to be changed in the Main script
-    * Documented DynamicRectVsRect and rearranged arguments in RayVsRect
+    * Added Ray Collision functions to the project
+
 
     Header files hierarchy
     * Player.h<--raylib.h && stdio.h
