@@ -5,12 +5,11 @@ Created by phani srikar on 04/06/20.
 Copyright © 2020 phani srikar. All rights reserved.
 
     CHANGELOG :
-
     - 31-7-2020
     * Added Ray Collision functions to the project
 
 
-    Header files hierarchy
+    Header files hierarchy :
     * Player.h<--raylib.h && stdio.h
     * CollisionManager.h<--player.h
     * StateMachine.h<--player.h
@@ -44,7 +43,6 @@ int main() {
     GuiSetStyle(DEFAULT, BORDER_WIDTH, 2);
     GuiSetStyle(DEFAULT, TEXT_PADDING, 5);
     GuiSetStyle(DEFAULT, BACKGROUND_COLOR, 0x000000ff);
-
 
     GuiSetStyle(DEFAULT,TEXT_COLOR_NORMAL, 0x000000ff);
     GuiSetStyle(DEFAULT,TEXT_COLOR_FOCUSED, 0x0000ffff); //Slider bar focused color
@@ -197,7 +195,7 @@ int main() {
         BeginDrawing();
 
             ClearBackground(marioSkyBlue);
-            BeginMode2D(camera);
+            BeginMode2D(camera); //This is used to draw in the world space
 
             // Background elements
             DrawTexture(hillLargeTexture, 100, 530, RAYWHITE);
@@ -243,10 +241,10 @@ int main() {
             DrawRectangleRec(GetCollisionRec(player.CollisionRect, smallPipeRec_1), RED);
             // PrintPlayerState(&player);
 
+            EndMode2D();
+            // Any drawing here is rendered on the screen and not relative to world space
 
             // Draw made with Raylib Logo
-
-            EndMode2D();
             DrawText("Made with ", 660, 580, 18, BLACK);
             DrawTexture(RaylibLogoTexture, screenWidth/2 + 350, screenHeight/2 + 250, RAYWHITE);
 

@@ -8,7 +8,7 @@ void CorrectPipeCollision(struct Player *player, Rectangle *pipeRect);
 /*
 * Tile Based Colliosion System Utility Functions
 * AABB - Axis Aligned Bounded Box
-* we assume that the rectangle won't rotate
+* we assume that the rectangle won't rotate and all the rectangles are Axis Alligned
 */
 bool RayVsRect2D(const Vector2 ray_origin, const Vector2 ray_dir, const Rectangle targetRect, Vector2 *contact_point,Vector2 *contact_normal, float *near_contact_time, Vector2 probableContactPoints[]);
 bool DynamicRectVsRect(const Rectangle sourceRect, const Vector2 sourceRectVelocity, const Rectangle targetRect, Vector2 *contact_point, Vector2 *contact_normal, float *near_contact_time, Vector2 probableContactPoints[]);
