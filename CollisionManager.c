@@ -118,6 +118,7 @@ float absF(float num){
     - PARAMETER targetRect : The target rectangle against which we are checking the collision
     - PARAMETER contact_point(Pointer) : A Vector2 that stores the contact point if the collision occurs with the rectangle
     - PARAMETER contact_normal(Pointer) : A Vector2 that stores the contact normal of the rectangle surface if the collision occurs with the rectangle
+    - PARAMETER near_contact_time(Pointer) : A float that stores the parametric contact time of the rectangle surface if the collision occurs with the rectangle
     - PARAMETER probableContactPoints : An array of Vector2's that stores the probale near and far contact points with the ray and rectanlge if the there is a chance of collision
 
     RETURNS : A bool indicating wether the collision has occured or not.
@@ -230,6 +231,7 @@ bool RayVsRect2D(const Vector2 ray_origin, const Vector2 ray_dir, const Rectangl
     - PARAMETER targetRect : The target rectangle against which we check for collisions with the source rectangle
     - PARAMETER contact_point(Pointer) : A Vector2 that stores the contact point if the collision occurs with the rectangle
     - PARAMETER contact_normal(Pointer) : A Vector2 that stores the contact normal of the rectangle surface if the collision occurs with the rectangle
+    - PARAMETER near_contact_time(Pointer) : A float that stores the parametric contact time of the rectangle surface if the collision occurs with the rectangle
     - PARAMETER probableContactPoints : An array of Vector2's that stores the probale near and far contact points with the ray and rectanlge if the there is a chance of collision
 
     RETURNS : A bool indicating wether the collision has occured or not.

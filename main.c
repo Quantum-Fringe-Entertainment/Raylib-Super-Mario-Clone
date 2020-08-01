@@ -7,6 +7,9 @@ Copyright © 2020 phani srikar. All rights reserved.
     CHANGELOG :
     - 31-7-2020
     * Added Ray Collision functions to the project
+    - 1-8-2020
+    * Integrating Collison System
+    * Refactoring Input system such that it complements the collision system
 
 
     Header Files Hierarchy :
@@ -101,6 +104,11 @@ int main() {
     Texture2D playerSheets[] = {playerIdleTex, playerWalkingTex, playerJumpingTex};
     float timeOfAscent = 0.294f;
     float timeOfDescent = 0.623f;
+    //Player collision Variables
+    Vector2 ray_origin, ray_direction, contact_normal, contact_point, probableContactPoints[2];
+    float ray_length = 8; // Player Velocity Vector Ray length
+    float player_Contact_Time;
+    const float velocity = 1.0f;
 
     // Camera Settingsq
     Camera2D camera = { 0 };
@@ -140,18 +148,18 @@ int main() {
 
         // Player Input
         // move left right only if player is in Idle/Walking state
-        if(player.state == Idle || player.state == Walking){
-            if(IsKeyDown(KEY_LEFT)){
-                player.Velocity.x = -2;
-                player.state = Walking;
-                player.dir = LEFT;
-            }
-            else if(IsKeyDown(KEY_RIGHT)){
-                player.Velocity.x = 2;
-                player.state = Walking;
-                player.dir = RIGHT;
-            }
-        }
+        // if(player.state == Idle || player.state == Walking){
+        //     if(IsKeyDown(KEY_LEFT)){
+        //         player.Velocity.x = -2;
+        //         player.state = Walking;
+        //         player.dir = LEFT;
+        //     }
+        //     else if(IsKeyDown(KEY_RIGHT)){
+        //         player.Velocity.x = 2;
+        //         player.state = Walking;
+        //         player.dir = RIGHT;
+        //     }
+        // }
         // Jump Input
         if(IsKeyPressed(KEY_SPACE)){
             printf("%s\n", "Started Jumping...");
@@ -159,14 +167,24 @@ int main() {
             player.state = Jumping;
         }
 
-        // Base state (Idle) transition
-        if(IsKeyUp(KEY_LEFT) && IsKeyUp(KEY_RIGHT) && player.state != Jumping){
-            player.Velocity.x = 0;
-            player.state = Idle;
+        // // Base state (Idle) transition
+        // if(IsKeyUp(KEY_LEFT) && IsKeyUp(KEY_RIGHT) && player.state != Jumping){
+        //     player.Velocity.x = 0;
+        //     player.state = Idle;
+        // }
+        //Player Input
+        if(IsKeyDown(KEY_LEFT)) player.Velocity.x = -velocity;
+        else if(IsKeyDown(KEY_RIGHT)) player.Velocity.x = velocity;
+        if(IsKeyDown(KEY_UP)) player.Velocity.y = -velocity;
+        else if(IsKeyDown(KEY_DOWN)) player.Velocity.y = velocity;
+        //Update the ray directon based on the input
+        ray_direction = (Vector2){GetFrameTime() * 100 * player.Velocity.x * ray_length, GetFrameTime() * 100 * player.Velocity.y * ray_length};
+
+        if(DynamicRectVsRect(player.CollisionRect, ray_direction, smallPipeRec_1, &contact_point, &contact_normal, &player_Contact_Time, probableContactPoints) && player_Contact_Time < 1 && player_Contact_Time > 0){
+            // resolve the velocity using the relative equation
+            player.Velocity.x += absF(player.Velocity.x) * (1 - player_Contact_Time) * contact_normal.x;
+            player.Velocity.y += absF(player.Velocity.y) * (1 - player_Contact_Time) * contact_normal.y;
         }
-
-
-
         // Player Update
         // update the player collision rect
         player.CollisionRect = (Rectangle){player.Position.x, player.Position.y, player.playerWidth, player.playerHeight};
@@ -174,12 +192,14 @@ int main() {
         // multiple the veloctiy by the total time elapsed from the last frame and add it to the current position.
         player.Position.x += player.Velocity.x * GetFrameTime() * 100;
         player.Position.y += player.Velocity.y * GetFrameTime() * 100;
+        // Update the ray origin as the player moves
+        ray_origin = (Vector2){player.Position.x + (player.playerWidth/2), player.Position.y + (player.playerHeight/2)};
+
         // Manage Jump mechanics of the player here
         Jump(&player, &timeOfAscent, &timeOfDescent);
 
         //Correct the player's collisions overlapping with Environment
-        CorrectGroundCollisionOverlapping(&player, &groundRect);
-        CorrectPipeCollision(&player, &smallPipeRec_1);
+        // CorrectGroundCollisionOverlapping(&player, &groundRect);
 
         // Sprite Animations
         // props animations
@@ -241,8 +261,21 @@ int main() {
             DrawRectangleRec(GetCollisionRec(player.CollisionRect, smallPipeRec_1), RED);
             // PrintPlayerState(&player);
 
+            // Rect vs Rect example
+            DrawRectangleLinesEx(player.CollisionRect, 2,YELLOW); // Player rectangle
+
+
+            DrawCircleV(ray_origin, 6, WHITE);
+
+            Vector2 velLine = (Vector2){ray_origin.x + ray_direction.x , ray_origin.y + ray_direction.y}; // Just for visualisation purpose
+            DrawLineV(ray_origin, velLine, RED);
+            DrawCircleV(velLine, 6, BLUE);
+
+
+
             EndMode2D();
             // Any drawing here is rendered on the screen and not relative to world space
+
 
             // Draw made with Raylib Logo
             DrawText("Made with ", 660, 580, 18, BLACK);
