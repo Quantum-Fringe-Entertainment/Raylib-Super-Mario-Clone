@@ -9,7 +9,7 @@ Copyright © 2020 phani srikar. All rights reserved.
     * Added Ray Collision functions to the project
 
 
-    Header files hierarchy :
+    Header Files Hierarchy :
     * Player.h<--raylib.h && stdio.h
     * CollisionManager.h<--player.h
     * StateMachine.h<--player.h
@@ -22,9 +22,11 @@ Copyright © 2020 phani srikar. All rights reserved.
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
 
-//  Macros
+// Macros
 #define G -6  // WORLD GRAVITY
 #define QS_FRAME_RATE 40
+//Custom Colors
+#define MARIO_SKY_BLUE CLITERAL(Color){107,139,247}
 
 // MARK:- Global Constants
 const int screenWidth = 800;
@@ -89,8 +91,6 @@ int main() {
     Texture2D playerJumpingTex = (Texture2D)LoadTexture("Resources/Characters/Mario Jump.png");
 
 //MARK:- Environment Variables
-    // Custom Colors
-    Color marioSkyBlue = (Color){107,139,247};
 
     //MARK:- Player Variables
     struct Player player = {};
@@ -194,7 +194,7 @@ int main() {
         //Drawing
         BeginDrawing();
 
-            ClearBackground(marioSkyBlue);
+            ClearBackground(MARIO_SKY_BLUE);
             BeginMode2D(camera); //This is used to draw in the world space
 
             // Background elements
