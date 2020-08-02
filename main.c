@@ -10,7 +10,9 @@ Copyright © 2020 phani srikar. All rights reserved.
     - 1-8-2020
     * Integrating Collison System
     * Refactoring Input system such that it complements the collision system
-    * Igonoring the current state system and using a temorary solution unless Samara is finished
+    * Igonoring the current state system and using a temporary solution until Samara2D is finished
+    - 2-8-2020
+    * Using multiple rays to avoid state overriding with the state machine
 
 
     Header Files Hierarchy :
@@ -26,9 +28,13 @@ Copyright © 2020 phani srikar. All rights reserved.
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
 
-// Macros
+/*
+* Macros
+*/
+//Constants
 #define G -6  // WORLD GRAVITY
 #define QS_FRAME_RATE 40
+#define COLLISION_TILES_COUNT 3
 //Custom Colors
 #define MARIO_SKY_BLUE CLITERAL(Color){107,139,247}
 
@@ -99,14 +105,14 @@ int main() {
     //MARK:- Player Variables
     struct Player player = {};
     player.Position.x = 1270; // Arbitrary start position
-    player.Position.y = 600; // Arbitrary start position
+    player.Position.y = 570; // Arbitrary start position
     player.state = Idle; // Initial player state
     // Player Animaiton state spritesheets
     Texture2D playerSheets[] = {playerIdleTex, playerWalkingTex, playerJumpingTex};
     float timeOfAscent = 0.294f;
     float timeOfDescent = 0.623f;
     //Player collision Variables
-    Vector2 ray_origin, ray_direction, contact_normal, contact_point, probableContactPoints[2];
+    Vector2 ray_origin, horizontal_Coll_Ray, vertical_Coll_Ray,contact_normal, contact_point, probableContactPoints[2];
     float ray_length = 8; // Player Velocity Vector Ray length
     float player_Contact_Time;
     const float velocity = 1.0f;
@@ -131,8 +137,11 @@ int main() {
     Rectangle brickRec_3 = (Rectangle){0,0, brickTex.width, brickTex.height};
 
     Rectangle smallPipeRec_1 = (Rectangle){1000, 540, pipeSmallTex.width, pipeSmallTex.height};
-    Rectangle mediumPipeRec_1 = (Rectangle){0, 0, pipeMediumTex.width, pipeMediumTex.height};
+    Rectangle mediumPipeRec_1 = (Rectangle){1400, 510, pipeMediumTex.width, pipeMediumTex.height};
     Rectangle largePipeRec_1 = (Rectangle){0, 0, pipeLargeTex.width, pipeLargeTex.height};
+
+    // Add all the collisions rects to a proper DS (emporarily to an array)
+    Rectangle Colliding_Tiles[COLLISION_TILES_COUNT] = {smallPipeRec_1, groundRect, mediumPipeRec_1};
 
     // Characters Rects
 
@@ -143,48 +152,68 @@ int main() {
     while (!WindowShouldClose())
     {
         //Update
+        Colliding_Tiles[1] = groundRect;
 
         // Camera Update
         camera.target = (Vector2){ player.Position.x + 20, player.Position.y + 20 };
 
         // Player Input
         // move left right only if player is in Idle/Walking state
-        // if(player.state == Idle || player.state == Walking){
-        //     if(IsKeyDown(KEY_LEFT)){
-        //         player.Velocity.x = -2;
-        //         player.state = Walking;
-        //         player.dir = LEFT;
-        //     }
-        //     else if(IsKeyDown(KEY_RIGHT)){
-        //         player.Velocity.x = 2;
-        //         player.state = Walking;
-        //         player.dir = RIGHT;
-        //     }
-        // }
+        if(player.state == Idle || player.state == Walking){
+            if(IsKeyDown(KEY_LEFT)){
+                player.Velocity.x = -2;
+                player.state = Walking;
+                player.dir = LEFT;
+            }
+            else if(IsKeyDown(KEY_RIGHT)){
+                player.Velocity.x = 2;
+                player.state = Walking;
+                player.dir = RIGHT;
+            }
+        }
+
+
+        // // Base state (Idle) transition
+        if(IsKeyUp(KEY_LEFT) && IsKeyUp(KEY_RIGHT) && player.state != Jumping){
+            player.Velocity.x = 0;
+            player.state = Idle;
+        }
+        //Player Input
+        // if(IsKeyDown(KEY_LEFT)) player.Velocity.x = -velocity;
+        // else if(IsKeyDown(KEY_RIGHT)) player.Velocity.x = velocity;
+        // if(IsKeyDown(KEY_UP)) player.Velocity.y = -velocity;
+        // else if(IsKeyDown(KEY_DOWN)) player.Velocity.y = velocity;
+
+        /*
+        * Player Raycasting
+        */
+
+        // The Collision detection Rays
+        // player.Velocity.y != 0 ? (player.Velocity.y > 0 ? 1 : -1) : player.Velocity.y
+        horizontal_Coll_Ray = (Vector2){GetFrameTime() * 100 * player.Velocity.x * ray_length, 0};
+        vertical_Coll_Ray = (Vector2){0, GetFrameTime() * 100 * (player.Velocity.y / 4) * ray_length};
+        // Check against all the necessary Rectangles
+        for (register int r = 0; r < COLLISION_TILES_COUNT; r++){
+            if(DynamicRectVsRect(player.CollisionRect, horizontal_Coll_Ray, Colliding_Tiles[r], &contact_point, &contact_normal, &player_Contact_Time, probableContactPoints) && player_Contact_Time < 1 && player_Contact_Time > 0){
+                // resolve the velocity using the relative equation
+                player.Velocity.x += absF(player.Velocity.x) * (1 - player_Contact_Time) * contact_normal.x;
+                // Update the Player State
+                if(player.state != Jumping)
+                    player.state = Idle;
+            }
+            if(DynamicRectVsRect(player.CollisionRect, vertical_Coll_Ray, Colliding_Tiles[r], &contact_point, &contact_normal, &player_Contact_Time, probableContactPoints) && player_Contact_Time < 1 && player_Contact_Time > 0){
+                // resolve the velocity using the relative equation
+                player.Velocity.y += absF(player.Velocity.y) * (1 - player_Contact_Time) * contact_normal.y;
+                // Update the Player State
+                player.state = Idle;
+            }
+
+        }
         // Jump Input
         if(IsKeyPressed(KEY_SPACE)){
             printf("%s\n", "Started Jumping...");
             // Start Jumping
             player.state = Jumping;
-        }
-
-        // // Base state (Idle) transition
-        // if(IsKeyUp(KEY_LEFT) && IsKeyUp(KEY_RIGHT) && player.state != Jumping){
-        //     player.Velocity.x = 0;
-        //     player.state = Idle;
-        // }
-        //Player Input
-        if(IsKeyDown(KEY_LEFT)) player.Velocity.x = -velocity;
-        else if(IsKeyDown(KEY_RIGHT)) player.Velocity.x = velocity;
-        if(IsKeyDown(KEY_UP)) player.Velocity.y = -velocity;
-        else if(IsKeyDown(KEY_DOWN)) player.Velocity.y = velocity;
-        //Update the ray directon based on the input
-        ray_direction = (Vector2){GetFrameTime() * 100 * player.Velocity.x * ray_length, GetFrameTime() * 100 * player.Velocity.y * ray_length};
-
-        if(DynamicRectVsRect(player.CollisionRect, ray_direction, smallPipeRec_1, &contact_point, &contact_normal, &player_Contact_Time, probableContactPoints) && player_Contact_Time < 1 && player_Contact_Time > 0){
-            // resolve the velocity using the relative equation
-            player.Velocity.x += absF(player.Velocity.x) * (1 - player_Contact_Time) * contact_normal.x;
-            player.Velocity.y += absF(player.Velocity.y) * (1 - player_Contact_Time) * contact_normal.y;
         }
         // Player Update
         // update the player collision rect
@@ -239,7 +268,7 @@ int main() {
             DrawTextureRec(brickTex, brickRec_3, (Vector2){700 + (brickTex.width * 2) + (questionBlockTexture.width/3 * 2), 400}, WHITE);
 
             DrawTextureV(pipeSmallTex, (Vector2){smallPipeRec_1.x, smallPipeRec_1.y}, RAYWHITE);
-            DrawTextureRec(pipeMediumTex, mediumPipeRec_1, (Vector2){1400, 510}, RAYWHITE);
+            DrawTextureV(pipeMediumTex, (Vector2){mediumPipeRec_1.x, mediumPipeRec_1.y}, RAYWHITE);
             DrawTextureRec(pipeLargeTex, largePipeRec_1, (Vector2){1800, 470}, RAYWHITE);
 
             DrawTextureRec(questionBlockTexture, a_questionBlockRec_1, (Vector2){600, 400}, WHITE);
@@ -268,14 +297,21 @@ int main() {
 
             DrawCircleV(ray_origin, 6, WHITE);
 
-            Vector2 velLine = (Vector2){ray_origin.x + ray_direction.x , ray_origin.y + ray_direction.y}; // Just for visualisation purpose
-            DrawLineV(ray_origin, velLine, RED);
-            DrawCircleV(velLine, 6, BLUE);
+            Vector2 HorivelLine = (Vector2){ray_origin.x + horizontal_Coll_Ray.x , ray_origin.y + horizontal_Coll_Ray.y}; // Just for visualisation purpose
+            Vector2 VertivellLine = (Vector2){ray_origin.x + vertical_Coll_Ray.x , ray_origin.y + vertical_Coll_Ray.y}; // Just for visualisation purpose
+            DrawLineV(ray_origin, HorivelLine, RED);
+            DrawCircleV(HorivelLine, 6, BLUE);
+            DrawLineV(ray_origin, VertivellLine, RED);
+            DrawCircleV(VertivellLine, 6, BLUE);
 
 
 
             EndMode2D();
-            // Any drawing here is rendered on the screen and not relative to world space
+
+
+            /*
+            * Any drawing here is rendered on the screen and not relative to world space aka Camera
+            */
 
 
             // Draw made with Raylib Logo
@@ -283,7 +319,7 @@ int main() {
             DrawTexture(RaylibLogoTexture, screenWidth/2 + 350, screenHeight/2 + 250, RAYWHITE);
 
             // On Screen Debug Statistics
-            DrawRectangleRounded((Rectangle){500,20,290,220}, 0.07f, 5, Fade(YELLOW, 0.8));
+            DrawRectangleRounded((Rectangle){500,20,290,240}, 0.07f, 5, Fade(YELLOW, 0.8));
             DrawText("Debug Stats", 510, 30, 18, BLACK);
             DrawText(FormatText("Current FPS is : %d", GetFPS()) , 520, 60, 14, BLACK);
             DrawText(FormatText("Player State is : %s", GetPlayerStateString(&player)) , 520, 90, 14, BLACK);
@@ -291,6 +327,8 @@ int main() {
             timeOfDescent = GuiSliderBar((Rectangle){635,140,60,20}, "Time of Descent", FormatText("TOD : %.3f", timeOfDescent), timeOfDescent, 0.001f, 1.0f);
             DrawText(FormatText("is Player Grounded : %s", player.isGrounded ? "True" : "False") , 520, 170, 14, BLACK);
             drawGroundRect = GuiCheckBox((Rectangle){ 520, 200, 20, 20 }, "Show Ground Rect", drawGroundRect);
+            DrawText(FormatText("Velocity Vector X : %f Y : %f", player.Velocity.x, player.Velocity.y) , 520, 240, 12, BLACK);
+
 
         EndDrawing();
     }
