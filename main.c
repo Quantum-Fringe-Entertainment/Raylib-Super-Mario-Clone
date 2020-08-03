@@ -13,6 +13,8 @@ Copyright © 2020 phani srikar. All rights reserved.
     * Igonoring the current state system and using a temporary solution until Samara2D is finished
     - 2-8-2020
     * Using multiple rays to avoid state overriding with the state machine
+    - 3-8-2020
+    * Working on adding GRavity to the player, removing manual overlap correction with the ground
 
 
     Header Files Hierarchy :
@@ -105,7 +107,7 @@ int main() {
     //MARK:- Player Variables
     struct Player player = {};
     player.Position.x = 1270; // Arbitrary start position
-    player.Position.y = 570; // Arbitrary start position
+    player.Position.y = 540; // Arbitrary start position
     player.state = Idle; // Initial player state
     // Player Animaiton state spritesheets
     Texture2D playerSheets[] = {playerIdleTex, playerWalkingTex, playerJumpingTex};
@@ -173,16 +175,17 @@ int main() {
         }
 
 
-        // // Base state (Idle) transition
+        // Base state (Idle) transition
         if(IsKeyUp(KEY_LEFT) && IsKeyUp(KEY_RIGHT) && player.state != Jumping){
             player.Velocity.x = 0;
             player.state = Idle;
         }
-        //Player Input
-        // if(IsKeyDown(KEY_LEFT)) player.Velocity.x = -velocity;
-        // else if(IsKeyDown(KEY_RIGHT)) player.Velocity.x = velocity;
-        // if(IsKeyDown(KEY_UP)) player.Velocity.y = -velocity;
-        // else if(IsKeyDown(KEY_DOWN)) player.Velocity.y = velocity;
+
+        // Test Input system
+        if(IsKeyDown(KEY_LEFT)) player.Velocity.x = -velocity;
+        else if(IsKeyDown(KEY_RIGHT)) player.Velocity.x = velocity;
+        if(IsKeyDown(KEY_UP)) player.Velocity.y = -velocity;
+        else if(IsKeyDown(KEY_DOWN)) player.Velocity.y = velocity;
 
         /*
         * Player Raycasting
@@ -191,7 +194,7 @@ int main() {
         // The Collision detection Rays
         // player.Velocity.y != 0 ? (player.Velocity.y > 0 ? 1 : -1) : player.Velocity.y
         horizontal_Coll_Ray = (Vector2){GetFrameTime() * 100 * player.Velocity.x * ray_length, 0};
-        vertical_Coll_Ray = (Vector2){0, GetFrameTime() * 100 * (player.Velocity.y / 4) * ray_length};
+        vertical_Coll_Ray = (Vector2){0, GetFrameTime() * 100 * (player.Velocity.y/4) * ray_length};
         // Check against all the necessary Rectangles
         for (register int r = 0; r < COLLISION_TILES_COUNT; r++){
             if(DynamicRectVsRect(player.CollisionRect, horizontal_Coll_Ray, Colliding_Tiles[r], &contact_point, &contact_normal, &player_Contact_Time, probableContactPoints) && player_Contact_Time < 1 && player_Contact_Time > 0){
@@ -201,13 +204,12 @@ int main() {
                 if(player.state != Jumping)
                     player.state = Idle;
             }
-            if(DynamicRectVsRect(player.CollisionRect, vertical_Coll_Ray, Colliding_Tiles[r], &contact_point, &contact_normal, &player_Contact_Time, probableContactPoints) && player_Contact_Time < 1 && player_Contact_Time > 0){
+            if(DynamicRectVsRect(player.CollisionRect, vertical_Coll_Ray, groundRect, &contact_point, &contact_normal, &player_Contact_Time, probableContactPoints) && player_Contact_Time < 1 && player_Contact_Time > 0){
                 // resolve the velocity using the relative equation
                 player.Velocity.y += absF(player.Velocity.y) * (1 - player_Contact_Time) * contact_normal.y;
                 // Update the Player State
                 player.state = Idle;
             }
-
         }
         // Jump Input
         if(IsKeyPressed(KEY_SPACE)){
@@ -228,8 +230,6 @@ int main() {
         // Manage Jump mechanics of the player here
         Jump(&player, &timeOfAscent, &timeOfDescent);
 
-        //Correct the player's collisions overlapping with Environment
-        // CorrectGroundCollisionOverlapping(&player, &groundRect);
 
         // Sprite Animations
         // props animations

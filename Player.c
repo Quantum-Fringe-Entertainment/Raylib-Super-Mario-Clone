@@ -18,13 +18,15 @@ void Jump(struct Player *player, float *timeOfAscent, float *timeOfDescent){
         // Enable movement while jumping
         if(IsKeyDown(KEY_LEFT)){
             player->Velocity.x = -2;
+            player->dir = LEFT;
         }
         else if(IsKeyDown(KEY_RIGHT)){
             player->Velocity.x = 2;
+            player->dir = RIGHT;
         }
     }
     else{
-        player->Velocity.y = 0;
+        player->Velocity.y = 2;
         ta = 0;
     }
 }
